@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Config personale (contiene credenziali)
+firmware/config/config.yaml
+
+# Database rubrica
+*.db
+phonebook.db
+
+# Logs
+*.log
+/var/log/vintage-tel.log
+
+# Test artifacts
+/tmp/test.wav
