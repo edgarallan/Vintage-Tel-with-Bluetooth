@@ -1,17 +1,6 @@
 # Vintage Tel BL — file di configurazione
 # Copia in config.yaml e personalizza
-
-# Modalità operativa: bt_only | sip_only | hybrid
-mode: hybrid
-
-# ─── Account SIP (per modalità sip o hybrid) ─────────────────────
-sip:
-  enabled: true
-  username: "your_sip_user"
-  password: "your_sip_password"
-  domain: "sip.provider.com"
-  port: 5060
-  transport: udp
+# Telefono come vivavoce Bluetooth HFP del cellulare.
 
 # ─── Bluetooth ───────────────────────────────────────────────────
 bluetooth:

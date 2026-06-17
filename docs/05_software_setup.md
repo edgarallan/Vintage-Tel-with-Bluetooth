@@ -78,29 +78,6 @@ Se il nome differisce da `sndrpigooglevoi`, aggiorna `firmware/config/asound.con
 > (GPIO 18/19/20/21) + alimentazione. L'I2C (GPIO 2/3) resta per il solo display.
 > Schema in [03_wiring.md](03_wiring.md).
 
-## Configurazione PJSIP (VoIP SIP)
-
-PJSIP è il client SIP più solido. Lo compiliamo per supporto Python:
-
-```bash
-cd ~
-wget https://github.com/pjsip/pjproject/archive/refs/tags/2.14.tar.gz
-tar xzf 2.14.tar.gz
-cd pjproject-2.14
-
-./configure --enable-shared CFLAGS="-fPIC"
-make dep && make -j4
-sudo make install
-sudo ldconfig
-
-cd pjsip-apps/src/swig
-make python
-cd python
-sudo python3 setup.py install
-```
-
-In alternativa più semplice usare **baresip** o **linphone-cli**, ma PJSIP è più controllabile da codice.
-
 ## Configurazione oFono per Bluetooth HFP
 
 oFono gestisce il profilo Hands-Free Profile, che permette al Pi di "essere" un vivavoce per il cellulare:
@@ -157,7 +134,7 @@ pip install -r requirements.txt
 
 # Configurazione utente
 cp config/config.example.yaml config/config.yaml
-nano config/config.yaml   # modifica SIP credentials, BT device, ecc.
+nano config/config.yaml   # imposta il MAC del cellulare, device_name, ecc.
 ```
 
 ## Configurazione ALSA
@@ -183,19 +160,7 @@ alsamixer -c sndrpigooglevoi
 ## Configurazione `config.yaml`
 
 ```yaml
-# Modalità: bt_only | sip_only | hybrid
-mode: hybrid
-
-# Account SIP (per modalità sip o hybrid)
-sip:
-  enabled: true
-  username: "your_sip_user"
-  password: "your_sip_password"
-  domain: "sip.provider.com"
-  port: 5060
-  transport: udp
-
-# Bluetooth
+# Bluetooth (vivavoce HFP del cellulare)
 bluetooth:
   enabled: true
   device_name: "Vintage SIP 1970"

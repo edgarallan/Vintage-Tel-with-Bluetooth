@@ -19,8 +19,5 @@ sounddevice>=0.4.6
 dbus-python>=1.3.2
 PyGObject>=3.46
 
-# SIP — installato separatamente da source (vedi docs/05_software_setup.md)
-# pjsua2  # build da source
-
 # Utility
 python-dateutil>=2.8

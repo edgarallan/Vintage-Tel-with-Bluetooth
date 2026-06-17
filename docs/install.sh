@@ -78,7 +78,7 @@ if [ ! -f "$REPO_DIR/firmware/config/config.yaml" ]; then
         "$REPO_DIR/firmware/config/config.yaml"
     echo ""
     echo "⚠️  Personalizza ora $REPO_DIR/firmware/config/config.yaml"
-    echo "   (credenziali SIP, MAC cellulare, quick-dial, ecc.)"
+    echo "   (MAC cellulare, device_name, quick-dial, ecc.)"
 fi
 
 echo "→ Installazione systemd service…"
@@ -93,7 +93,7 @@ echo "════════════════════════�
 echo ""
 echo "Prossimi passi:"
 echo "  1. Edita config: nano $REPO_DIR/firmware/config/config.yaml"
-echo "  2. (Opzionale) Installa PJSIP per VoIP — vedi docs/05_software_setup.md"
+echo "  2. Accoppia il cellulare via Bluetooth — vedi docs/05_software_setup.md"
 echo "  3. Riavvia: sudo reboot"
 echo "  4. Dopo reboot: sudo systemctl start vintage-tel"
 echo "  5. Verifica log: journalctl -u vintage-tel -f"

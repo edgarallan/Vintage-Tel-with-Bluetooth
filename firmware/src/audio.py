@@ -2,8 +2,8 @@
 audio.py — Gestione audio: toni di sistema (dial tone, busy, keypress)
 
 I toni vengono generati al volo con NumPy e riprodotti via ALSA/PulseAudio.
-Per le chiamate vere, l'audio è gestito da oFono (BT-HFP) o PJSIP (SIP),
-che dialogano direttamente con il dispositivo audio I2S.
+Per le chiamate vere, l'audio è gestito da oFono (Bluetooth HFP),
+che dialoga col dispositivo audio I2S.
 """
 
 import asyncio

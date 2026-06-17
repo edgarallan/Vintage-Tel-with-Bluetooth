@@ -34,8 +34,8 @@ Il telefono SIP Siemens grigio degli anni '70 è un capolavoro di ingegneria ele
 │  │              RASPBERRY PI ZERO 2 W                        │ │
 │  │                                                           │ │
 │  │  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │ │
-│  │  │ oFono   │  │ PJSIP    │  │ Dial     │  │ Display  │   │ │
-│  │  │ (BT HFP)│  │ (VoIP)   │  │ reader   │  │ OLED I2C │   │ │
+│  │  │ oFono   │  │ Audio    │  │ Dial     │  │ Display  │   │ │
+│  │  │ (BT HFP)│  │ I2S      │  │ reader   │  │ OLED I2C │   │ │
 │  │  └────┬────┘  └─────┬────┘  └────┬─────┘  └────┬─────┘   │ │
 │  │       │             │            │             │         │ │
 │  │       └──────┬──────┴────────────┴─────────────┘         │ │
@@ -86,7 +86,7 @@ Il telefono ha 5 stati principali:
                ▼
         ┌─────────────┐
         │   CALLING   │  ← chiamata in corso
-        └──────┬──────┘    via BT-HFP o SIP
+        └──────┬──────┘    via Bluetooth HFP
                │
                │ hook down / remote hangup
                ▼
@@ -108,13 +108,13 @@ Il telefono ha 5 stati principali:
 ## Scelte tecniche
 
 ### Perché Raspberry Pi Zero 2 W e non ESP32?
-Le funzionalità "Massimo" richiedono:
+Il progetto richiede:
 - Stack Bluetooth completo con HFP/HSP (oFono + BlueZ)
-- Client SIP completo (PJSIP)
+- Audio I2S full-duplex per le chiamate
 - Database rubrica (SQLite)
-- Multitasking reale tra audio, GPIO, networking
+- Multitasking reale tra audio, GPIO, Bluetooth
 
-L'ESP32 può fare BT audio ma non SIP + HFP + rubrica contemporaneamente in modo affidabile.
+L'ESP32 può fare BT audio ma non HFP + audio + rubrica contemporaneamente in modo affidabile.
 
 ### Perché I2S e non l'audio analogico del Pi?
 Il Pi Zero non ha jack audio. L'I2S dà qualità migliore e bassa latenza — fondamentale per le chiamate. Usiamo due breakout I2S: **MAX98357A** (ampli/speaker) e **SPH0645** (mic MEMS), full-duplex con l'overlay `googlevoicehat-soundcard`.
@@ -125,10 +125,8 @@ La capsula a carbone viene **rimossa** e sostituita dal breakout **SPH0645** mon
 ### Perché tenere il campanello originale?
 Perché è bellissimo. Richiede un boost converter che generi ~24V AC a 20-25Hz, oppure una soluzione più semplice con due bobine pilotate in alternanza da un H-bridge.
 
-## Profili di funzionamento
+## Funzionamento
 
-Il dispositivo opera in 3 modalità (selezionabili da config):
-
-1. **BT-only**: solo vivavoce Bluetooth per cellulare accoppiato
-2. **SIP-only**: telefono VoIP autonomo via Wi-Fi
-3. **Hybrid** (default): se cellulare BT presente → BT; altrimenti SIP
+Il dispositivo è un **vivavoce Bluetooth HFP** per il cellulare accoppiato: la
+telefonia avviene sul cellulare, l'apparecchio vintage fa da interfaccia fisica
+(disco per comporre, cornetta per parlare/ascoltare, campanello per lo squillo).
