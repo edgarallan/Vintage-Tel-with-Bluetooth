@@ -28,6 +28,11 @@
 
 ## Audio problemi
 
+### Sintomo: scheda audio WM8960 non rilevata
+1. `aplay -l` non mostra `wm8960soundcard` → driver Seeed non installato/caricato: rilancia `sudo ./scripts/install.sh --module wm8960-soundcard` dal repo `seeed-linux-dtoverlays` e riavvia
+2. `i2cdetect -y 1` deve mostrare `1a` (codec) e `3c` (OLED); se manca `1a`, controlla i jumper SDA/SCL e l'alimentazione del WM8960
+3. Verifica che `dtparam=i2s=on` e `dtparam=i2c_arm=on` siano in `config.txt`
+
 ### Sintomo: speaker non emette suono
 1. `aplay -l` deve elencare la scheda `wm8960soundcard` (se manca: overlay/driver WM8960 non caricato)
 2. Verifica volume: `alsamixer -c wm8960soundcard` → alza "Speaker" e i canali di uscita

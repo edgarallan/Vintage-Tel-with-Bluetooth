@@ -125,7 +125,8 @@ Il **WM8960** gestisce sia l'ingresso (mic elettrete) sia l'uscita (speaker), vi
 2. Monta la **capsula elettrete 9.7 mm** nella stessa sede (adattatore stampato 3D se serve).
 3. Collega l'elettrete agli ingressi `MIC+ / MIC−` del WM8960 (bias fornito dal codec, niente preamp esterno).
 4. Collega lo speaker della cornetta alle uscite `SPK+ / SPK−` del WM8960 (ampli integrato).
-5. Collega il WM8960 all'I2S del Pi (BCLK/LRCLK/DACDAT/ADCDAT, vedi [`03_wiring.md`](03_wiring.md)).
+5. Collega il WM8960 al Pi **a jumper** (non impilare la HAT): I2S BCLK/LRCLK/DACDAT/ADCDAT + I2C SDA/SCL + 5V/3V3/GND — vedi [`03_wiring.md`](03_wiring.md). Così i GPIO di disco/gancio/campanello/LED restano liberi.
+6. Installa il driver Seeed WM8960 e verifica la scheda (`aplay -l`, `i2cdetect -y 1`) — vedi [`05_software_setup.md`](05_software_setup.md).
 
 **Speaker**: lo speaker originale (50-200Ω) si collega direttamente all'uscita del WM8960 — nessun adattamento.
 

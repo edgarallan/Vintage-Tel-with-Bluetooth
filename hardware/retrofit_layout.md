@@ -51,7 +51,7 @@ lì che va il Raspberry Pi.
 | # | Componente | Posizione consigliata |
 |---|-----------|-----------------------|
 | 7 | **Raspberry Pi Zero 2 W** | Spazio centrale liberato da 2+3 (zona più piatta e ampia). |
-| 8 | **Codec audio I2S WM8960** (DAC + ampli speaker + preamp/ADC mic) | Vicino ai morsetti dell'auricolare (lato sinistro), cavo corto verso lo speaker. |
+| 8 | **Codec audio I2S WM8960** (Seeed; DAC + ampli + ADC mic) | Vicino ai morsetti dell'auricolare; collegato al Pi **a jumper** (I2S + I2C + alim.), non impilato. |
 | 9 | **Boost (XL6009) + H-bridge (L9110S)** per il campanello | Vicino alla bobina del campanello (basso), cavi corti. |
 | 10 | **Microfono elettrete 9.7 mm** | **Nella cornetta**, al posto della capsula a carbone; collegato al WM8960 (#8). |
 

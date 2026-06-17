@@ -152,6 +152,28 @@ Note:
 - Il **volume** di speaker e mic si regola da ALSA (`alsamixer -c wm8960soundcard`)
   e dai softvol `PhoneSoftVol` / `PhoneCaptureVol` in [`asound.conf`](../firmware/config/asound.conf),
   pilotati da `audio.speaker_gain_db` / `audio.mic_gain_db`.
+- **Controllo codec via I2C**: il WM8960 si configura via I2C (GPIO 2 SDA / GPIO 3
+  SCL, indirizzo `0x1a`) sullo **stesso bus del display OLED** (0x3C) — convivono
+  senza conflitti. Verifica con `i2cdetect -y 1` (devono comparire `1a` e `3c`).
+
+### Collegamento della HAT Seeed WM8960
+
+> **Non impilare** la HAT sull'intero header a 40 pin: coprirebbe i GPIO di disco,
+> gancio, campanello, LED e pulsante. Collega **a jumper** solo i pin necessari:
+
+```
+WM8960 (Seeed)        Raspberry Pi
+  BCLK      ───────►  GPIO 18  (pin 12)
+  LRCLK     ───────►  GPIO 19  (pin 35)
+  DACDAT    ───────►  GPIO 21  (pin 40)   (Pi → speaker)
+  ADCDAT    ◄───────  GPIO 20  (pin 38)   (mic → Pi)
+  SDA (I2C) ───────►  GPIO 2   (pin 3)
+  SCL (I2C) ───────►  GPIO 3   (pin 5)
+  5V / 3V3 / GND ──►  alimentazione
+```
+
+Sul lato scheda: l'**elettrete** va all'ingresso mic della HAT (`MIC` / `MIC+ MIC−`),
+lo **speaker** della cornetta alle uscite altoparlante (`SPK+ / SPK−`).
 
 ### Montaggio dell'elettrete in cornetta
 

@@ -59,7 +59,7 @@
     │  GPIO 7  ────[330Ω]──► LED B       │
     │  (common cathode to GND)           │
     │                                    │
-    │  I2C bus (GPIO 2,3) ── Display OLED│
+    │  I2C bus (GPIO 2,3) ── OLED + WM8960│
     │                                    │
     │  I2S bus (GPIO 18,19,20,21):       │
     │   ├─ Codec WM8960 → SPEAKER cornetta (ampli integrato)
@@ -89,8 +89,8 @@
 ### Bus I2C (display)
 | Segnale | Pin Pi (BCM) | Verso |
 |---------|--------------|-------|
-| SDA | GPIO 2 | Display OLED SDA |
-| SCL | GPIO 3 | Display OLED SCL |
+| SDA | GPIO 2 | Display OLED (0x3c) + WM8960 (0x1a) |
+| SCL | GPIO 3 | Display OLED (0x3c) + WM8960 (0x1a) |
 | 3V3 | pin 1 | Display VCC |
 | GND | pin 9 | Display GND |
 

@@ -28,8 +28,8 @@
 
 | Funzione | Nome BCM | Pin fisico | Tipo |
 |---|---|---|---|
-| Display I2C SDA | GPIO 2 | 3 | I2C |
-| Display I2C SCL | GPIO 3 | 5 | I2C |
+| I2C SDA (OLED 0x3c + WM8960 0x1a) | GPIO 2 | 3 | I2C |
+| I2C SCL (OLED 0x3c + WM8960 0x1a) | GPIO 3 | 5 | I2C |
 | Disco - impulsi | GPIO 4 | 7 | Input, pull-up |
 | Disco - NSI | GPIO 17 | 11 | Input, pull-up |
 | Hook switch | GPIO 27 | 13 | Input, pull-up |

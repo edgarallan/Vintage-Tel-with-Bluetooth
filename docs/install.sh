@@ -44,10 +44,15 @@ if ! grep -q "vintage-tel-bl" "$CONFIG_TXT"; then
 # vintage-tel-bl
 dtparam=audio=off
 dtparam=i2s=on
-# Codec WM8960 (speaker + mic elettrete). Richiede il driver WM8960.
-dtoverlay=wm8960-soundcard
+dtparam=i2c_arm=on
+# NB: l'overlay del codec WM8960 lo aggiunge lo script driver di Seeed Studio
+# (vedi docs/05_software_setup.md), non va messo qui a mano.
 EOF
 fi
+
+echo "→ Codec audio: installa il driver Seeed WM8960 e riavvia:"
+echo "    git clone https://github.com/Seeed-Studio/seeed-linux-dtoverlays"
+echo "    cd seeed-linux-dtoverlays && sudo ./scripts/install.sh --module wm8960-soundcard"
 
 echo "→ Aggiunta utente $PI_USER ai gruppi necessari…"
 usermod -aG gpio,i2c,spi,audio,bluetooth "$PI_USER"

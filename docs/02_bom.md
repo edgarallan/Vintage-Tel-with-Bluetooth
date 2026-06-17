@@ -14,7 +14,7 @@ Prezzi indicativi 2026 in EUR, IVA inclusa. Acquisto consigliato: Mouser/RS/Digi
 
 | # | Componente | Quantità | Prezzo (€) | Note |
 |---|-----------|----------|-----------|------|
-| 4 | Codec audio I2S **WM8960** (modulo/HAT) | 1 | 10 | DAC + ampli speaker **+ preamp/ADC mic** in un'unica scheda |
+| 4 | Codec audio I2S **WM8960 (Seeed Studio)** | 1 | 10 | DAC + ampli speaker **+ preamp/ADC mic**; driver Seeed, collegare a jumper (non impilare la HAT) |
 | 5 | Capsula **elettrete 9.7 mm** | 1 | 2 | Microfono cornetta (sostituisce il mic a carbone) |
 | 6 | *(alternativa)* PCM5102A + PAM8302 + INMP441 | — | ~17 | Solo se **non** usi il WM8960: 3 moduli separati (DAC + ampli + mic MEMS digitale) |
 

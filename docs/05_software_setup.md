@@ -52,17 +52,44 @@ Aggiungi in fondo:
 # Disabilita audio integrato (non c'è jack sul Pi Zero)
 dtparam=audio=off
 
-# Abilita I2S
+# Abilita I2S e I2C (I2C serve sia al display sia al controllo del codec WM8960)
 dtparam=i2s=on
-
-# Codec audio WM8960 (speaker + mic elettrete)
-# Richiede driver/overlay WM8960 (Waveshare/Seeed): se 'wm8960-soundcard' non è
-# disponibile di default, esegui lo script d'installazione del produttore.
-dtoverlay=wm8960-soundcard
+dtparam=i2c_arm=on
 
 # Wi-Fi power management off (chiamate stabili)
 # Aggiungere riga in /etc/rc.local: iwconfig wlan0 power off
 ```
+
+> L'overlay del codec **non** va aggiunto a mano: lo installa lo script Seeed
+> (sezione seguente), che scrive da sé la riga `dtoverlay=...` corretta.
+
+## Driver codec WM8960 (Seeed Studio)
+
+La scheda **Seeed Studio WM8960** usa un driver fuori dal kernel base. Installalo
+dal repo ufficiale Seeed:
+
+```bash
+cd ~
+git clone https://github.com/Seeed-Studio/seeed-linux-dtoverlays
+cd seeed-linux-dtoverlays
+sudo ./scripts/install.sh --module wm8960-soundcard
+sudo reboot
+```
+
+Dopo il riavvio, **verifica** il nome reale della scheda ALSA:
+
+```bash
+aplay -l        # cerca una card 'wm8960soundcard'
+arecord -l
+```
+
+Se il nome differisce da `wm8960soundcard`, aggiorna di conseguenza
+`firmware/config/asound.conf` (campi `card` e `hw:CARD=...`).
+
+> **Collegamento (importante):** non impilare la HAT sull'intero header a 40 pin —
+> coprirebbe i GPIO usati da disco, gancio, campanello, LED e pulsante. Collega il
+> WM8960 **a jumper** solo su: I2S (GPIO 18/19/20/21), I2C di controllo
+> (GPIO 2/3, indirizzo `0x1a`), 5V, 3V3 e GND. Vedi [03_wiring.md](03_wiring.md).
 
 ## Configurazione PJSIP (VoIP SIP)
 
