@@ -19,6 +19,7 @@ Vista più chiara (angolazione diversa) con la stessa numerazione:
 > ogni passo) vedi la procedura in [`../docs/07_retrofit_layout.md`](../docs/07_retrofit_layout.md).
 
 Materiale di riferimento:
+- Versione schematica (tieni/rimuovi/aggiungi): [`../assets/diagrams/09_conversion_map.svg`](../assets/diagrams/09_conversion_map.svg)
 - Schema originale Siemens S62: [`../assets/retrofit/s62_schema.jpg`](../assets/retrofit/s62_schema.jpg)
 - Foto cassetta smontata (sorgente): [`../assets/retrofit/cassetta_smontata.jpg`](../assets/retrofit/cassetta_smontata.jpg)
 

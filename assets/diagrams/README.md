@@ -1,6 +1,6 @@
 # Diagrammi di montaggio
 
-Otto diagrammi **SVG** che guidano nel retrofit hardware del telefono SIP S62.
+Nove diagrammi **SVG** che guidano nel retrofit hardware del telefono SIP S62.
 
 Gli SVG sono **autoportanti**: stili e palette inline, nessuna dipendenza
 esterna, font di sistema. Si visualizzano correttamente su GitHub (light **e**
@@ -16,6 +16,7 @@ dark mode, tramite `@media (prefers-color-scheme)`) e aprendoli nel browser.
 | 6 | [`06_bell_driver_schematic.svg`](06_bell_driver_schematic.svg) | Driver del campanello (boost + H-bridge) | [docs/04](../../docs/04_installation.md) · Step 7 · [hardware](../../hardware/bell_driver.md) |
 | 7 | [`07_audio_wiring.svg`](07_audio_wiring.svg) | Connessioni audio I2S (DAC/ADC, cornetta) | [docs/04](../../docs/04_installation.md) · Step 8 |
 | 8 | [`08_oled_placement_options.svg`](08_oled_placement_options.svg) | Tre opzioni per il display OLED | [docs/04](../../docs/04_installation.md) · Step 9 |
+| 9 | [`09_conversion_map.svg`](09_conversion_map.svg) | Mappa di conversione: tieni / rimuovi / aggiungi (schematico) | [docs/07](../../docs/07_retrofit_layout.md) |
 
 ## Diagrammi vs foto reali
 
@@ -24,7 +25,9 @@ modello). Per la conversione su **foto reale della cassetta** — cosa
 togliere/tenere/aggiungere con marker colorati — vedi
 [`../retrofit/`](../retrofit/) e [`docs/07`](../../docs/07_retrofit_layout.md).
 I due si completano: lo schematico spiega *cosa va dove*, la foto annotata
-mostra *com'è davvero il tuo apparecchio*.
+mostra *com'è davvero il tuo apparecchio*. In particolare il diagramma **9**
+(`09_conversion_map.svg`) è la versione schematica e pulita della stessa mappa
+tieni/rimuovi/aggiungi delle foto in `retrofit/`, con la stessa numerazione 1–10.
 
 ## Convenzioni
 

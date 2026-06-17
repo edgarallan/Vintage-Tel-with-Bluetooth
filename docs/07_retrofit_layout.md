@@ -13,6 +13,9 @@ Vista più chiara (stesso modello, angolazione diversa) con gli stessi numeri:
 > 🟩 verde = tenere · 🟥 rosso = rimuovere · 🟦 blu = nuovo.
 > Le posizioni dei marker sono **indicative**: verifica sempre sul tuo esemplare.
 
+Versione **schematica** pulita (stessa numerazione 1–10), comoda come riferimento
+rapido: [`../assets/diagrams/09_conversion_map.svg`](../assets/diagrams/09_conversion_map.svg).
+
 ## In breve
 
 | Azione | Componenti | Note |

@@ -58,7 +58,7 @@ Riferimenti hardware in [`hardware/`](hardware/):
 
 ## 🖼️ Guida visiva
 
-Otto diagrammi tecnici in [`assets/diagrams/`](assets/diagrams/) (SVG autoportanti, light/dark mode):
+Nove diagrammi tecnici in [`assets/diagrams/`](assets/diagrams/) (SVG autoportanti, light/dark mode):
 
 | # | Diagramma | Usato in |
 |---|-----------|----------|
@@ -70,6 +70,7 @@ Otto diagrammi tecnici in [`assets/diagrams/`](assets/diagrams/) (SVG autoportan
 | 6 | [Driver campanello](assets/diagrams/06_bell_driver_schematic.svg) | docs/04 · Step 7 |
 | 7 | [Connessioni audio](assets/diagrams/07_audio_wiring.svg) | docs/04 · Step 8 |
 | 8 | [Posizionamento display OLED](assets/diagrams/08_oled_placement_options.svg) | docs/04 · Step 9 |
+| 9 | [Mappa di conversione (schematico)](assets/diagrams/09_conversion_map.svg) | docs/07 |
 
 📷 **Mappa di conversione su foto reale + procedura ordinata**: [`docs/07_retrofit_layout.md`](docs/07_retrofit_layout.md) — cosa togliere/tenere/aggiungere nella cassetta S62 (verde/rosso/blu) e in che ordine smontare e montare, con collaudo a ogni passo. Foto in [`assets/retrofit/`](assets/retrofit/).
 
