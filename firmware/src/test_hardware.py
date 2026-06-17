@@ -105,12 +105,12 @@ async def test_audio():
     try:
         # Registra 3 secondi
         subprocess.run([
-            "arecord", "-D", "plughw:CARD=sndrpihifiberry",
+            "arecord", "-D", "plughw:CARD=sndrpigooglevoi",
             "-f", "S16_LE", "-r", "16000", "-c", "1", "-d", "3", "/tmp/test.wav"
         ], check=True, timeout=10)
         print("  Riproduco ora dalla cornetta...")
         subprocess.run([
-            "aplay", "-D", "plughw:CARD=sndrpihifiberry", "/tmp/test.wav"
+            "aplay", "-D", "plughw:CARD=sndrpigooglevoi", "/tmp/test.wav"
         ], check=True, timeout=10)
         print("  ✅ Audio loopback completato")
     except Exception as e:
