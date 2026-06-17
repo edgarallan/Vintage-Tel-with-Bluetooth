@@ -13,7 +13,7 @@ Il telefono SIP Siemens grigio degli anni '70 è un capolavoro di ingegneria ele
 │  ┌──────────────┐    ┌─────────────────┐    ┌───────────────┐ │
 │  │   CORNETTA   │    │  DISCO COMBIN.  │    │  CAMPANELLO   │ │
 │  │              │    │                 │    │  (24V AC)     │ │
-│  │ • Mic carbone│    │ • Contatto      │    │               │ │
+│  │ • Mic elettr.│    │ • Contatto      │    │               │ │
 │  │ • Speaker    │    │   pulse (NSI)   │    │               │ │
 │  │ • Hook switch│    │ • Contatto      │    │               │ │
 │  │              │    │   off-normal    │    │               │ │
@@ -117,11 +117,11 @@ Le funzionalità "Massimo" richiedono:
 L'ESP32 può fare BT audio ma non SIP + HFP + rubrica contemporaneamente in modo affidabile.
 
 ### Perché I2S e non l'audio analogico del Pi?
-Il Pi Zero non ha jack audio. L'I2S con un DAC dedicato (PCM5102A) dà qualità audio molto migliore e bassa latenza — fondamentale per le chiamate.
+Il Pi Zero non ha jack audio. L'I2S con un codec dedicato (WM8960) dà qualità audio molto migliore e bassa latenza — fondamentale per le chiamate.
 
-### Perché conservare il microfono a carbone?
-Per fedeltà vintage. Suona "telefonico" in modo autentico. Richiede però un bias DC e un preamp.
-*Alternativa:* sostituire con elettrete da 9.7mm che entra nella stessa sede meccanica.
+### Microfono: elettrete moderno (scelto)
+Si sostituisce la capsula a carbone con un **elettrete 9.7 mm** (stessa sede meccanica): più semplice e di qualità migliore. Essendo analogico, passa per il codec **WM8960**, che fornisce bias + preamp + ADC (e in più amplifica lo speaker), così una sola scheda copre ingresso e uscita.
+*Alternativa:* mic a carbone originale (più "vintage" ma richiede bias + preamp esterni).
 
 ### Perché tenere il campanello originale?
 Perché è bellissimo. Richiede un boost converter che generi ~24V AC a 20-25Hz, oppure una soluzione più semplice con due bobine pilotate in alternanza da un H-bridge.

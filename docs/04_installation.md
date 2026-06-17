@@ -66,7 +66,7 @@ Prima di rimontare con l'elettronica nuova, vale la pena:
 
 Salda su perfboard 7x9cm:
 1. Resistori pull-up + condensatori per disco e hook (vedi `03_wiring.md`)
-2. PAM8302 (amplificatore speaker)
+2. Codec audio **WM8960** (DAC speaker + ampli + ADC mic in un modulo)
 3. Connettori JST-XH per i cavi modulari verso il Pi e verso i componenti originali
 
 Crea **almeno 5 JST sul perfboard**:
@@ -114,18 +114,22 @@ Test funzionamento PRIMA di rimontare tutto:
 
 ![Connessioni audio](../assets/diagrams/07_audio_wiring.svg)
 
-### Opzione A — Mic a carbone originale (autentico)
-1. Connetti i fili del mic al circuito di bias + preamp sulla perfboard
-2. Output del preamp → ingresso analogico di un ADC esterno → I2S al Pi
-3. Questa opzione richiede un modulo aggiuntivo come WM8960 (HAT audio I2S con codec completo)
+> Nota: il diagramma mostra il layout a 3 moduli (DAC + ampli + mic MEMS). Con la
+> soluzione scelta **elettrete + WM8960** quei tre blocchi sono un'unica scheda.
 
-### Opzione B — INMP441 al posto del mic originale (semplice)
-1. Smonta la capsula a carbone (di solito si svita o si estrae)
-2. Pratica supporto stampato 3D o adatta il modulo INMP441 nella sede originale
-3. Connetti via I2S direttamente al Pi
-4. Conserva la capsula originale per ripristino futuro
+### Soluzione scelta — Elettrete + codec WM8960
 
-**Per lo speaker**: lo speaker originale è quasi sempre 50-200Ω. Connettilo direttamente all'uscita del PAM8302 — funziona benissimo, non serve adattamento.
+Il **WM8960** gestisce sia l'ingresso (mic elettrete) sia l'uscita (speaker), via I2S.
+
+1. Smonta la capsula a carbone (di solito si svita o si estrae) e **conservala** per un eventuale ripristino.
+2. Monta la **capsula elettrete 9.7 mm** nella stessa sede (adattatore stampato 3D se serve).
+3. Collega l'elettrete agli ingressi `MIC+ / MIC−` del WM8960 (bias fornito dal codec, niente preamp esterno).
+4. Collega lo speaker della cornetta alle uscite `SPK+ / SPK−` del WM8960 (ampli integrato).
+5. Collega il WM8960 all'I2S del Pi (BCLK/LRCLK/DACDAT/ADCDAT, vedi [`03_wiring.md`](03_wiring.md)).
+
+**Speaker**: lo speaker originale (50-200Ω) si collega direttamente all'uscita del WM8960 — nessun adattamento.
+
+> *Alternativa senza WM8960*: mic a carbone originale (bias + preamp + ADC esterni) oppure mic MEMS digitale INMP441 + DAC/ampli separati. Più componenti.
 
 ## Step 9 — Display OLED (opzionale)
 

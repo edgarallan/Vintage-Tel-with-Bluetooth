@@ -29,16 +29,16 @@
 ## Audio problemi
 
 ### Sintomo: speaker non emette suono
-1. `aplay -l` deve elencare la scheda HiFiBerry DAC
-2. Verifica volume: `alsamixer` → seleziona la scheda → alza tutti i canali
-3. Verifica cablaggio I2S: BCK, LRCK, DOUT su pin 12, 35, 40
-4. Verifica alimentazione 5V del PCM5102A (misurare con multimetro)
+1. `aplay -l` deve elencare la scheda `wm8960soundcard` (se manca: overlay/driver WM8960 non caricato)
+2. Verifica volume: `alsamixer -c wm8960soundcard` → alza "Speaker" e i canali di uscita
+3. Verifica cablaggio I2S: BCK, LRCK, DACDAT su pin 12, 35, 40
+4. Verifica alimentazione 5V del modulo WM8960 (misurare con multimetro)
 
 ### Sintomo: microfono troppo basso o nessun audio in entrata
-1. Se usi mic a carbone: verifica il bias DC (3-5V su Mic+)
-2. Se usi INMP441: il pin L/R va a GND (canale sinistro) o VCC (destro)
-3. Aumenta `mic_gain_db` in config.yaml fino a 30-40 dB
-4. Test diretto: `arecord -D plughw:CARD=sndrpihifiberry -f S16_LE -r 16000 -d 5 test.wav && aplay test.wav`
+1. In `alsamixer -c wm8960soundcard`: abilita **Capture**, alza "Mic"/"Capture" e attiva l'eventuale boost
+2. Verifica che l'elettrete sia su `MIC+ / MIC−` (con bias del codec) e con la polarità corretta
+3. Aumenta `mic_gain_db` in config.yaml fino a 20-30 dB (softvol `PhoneCaptureVol`)
+4. Test diretto: `arecord -D plughw:CARD=wm8960soundcard -f S16_LE -r 16000 -d 5 test.wav && aplay test.wav`
 
 ### Sintomo: eco o microfono che si sente sullo speaker
 1. Abilita echo cancellation in PulseAudio:

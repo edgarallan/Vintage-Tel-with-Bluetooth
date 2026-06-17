@@ -44,7 +44,8 @@ if ! grep -q "vintage-tel-bl" "$CONFIG_TXT"; then
 # vintage-tel-bl
 dtparam=audio=off
 dtparam=i2s=on
-dtoverlay=hifiberry-dac
+# Codec WM8960 (speaker + mic elettrete). Richiede il driver WM8960.
+dtoverlay=wm8960-soundcard
 EOF
 fi
 

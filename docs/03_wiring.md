@@ -45,8 +45,8 @@
 | LED_B | GPIO 7 | 26 | OUT (PWM) | LED stato — blu |
 | I2S BCK | GPIO 18 | 12 | OUT | Bit clock audio |
 | I2S LRCK | GPIO 19 | 35 | OUT | LR clock audio |
-| I2S DIN | GPIO 20 | 38 | IN | Audio dal mic ADC |
-| I2S DOUT | GPIO 21 | 40 | OUT | Audio verso DAC speaker |
+| I2S DIN | GPIO 20 | 38 | IN | Audio dal codec WM8960 (mic elettrete) |
+| I2S DOUT | GPIO 21 | 40 | OUT | Audio verso codec WM8960 (speaker) |
 
 ## Cablaggio del disco combinatore
 
@@ -126,60 +126,46 @@ GPIO 27 = LOW → cornetta sollevata (handset up)
 GPIO 27 = HIGH → cornetta poggiata (handset down)
 ```
 
-## Cablaggio audio
+## Cablaggio audio (codec WM8960 + mic elettrete)
 
-### Output (Pi → speaker cornetta)
-
-```
-Pi GPIO 18 (BCK) ──┐
-Pi GPIO 19 (LRCK)──┤  PCM5102A    ┌────► L OUT ──┐
-Pi GPIO 21 (DOUT)──┘   DAC I2S    │              ├── PAM8302 ──► Speaker cornetta
-                                  └────► R OUT ──┘    amp        (8Ω, 0.5W)
-Pi 5V ──────────► VCC PCM5102A
-Pi GND ─────────► GND PCM5102A
-
-Note jumper PCM5102A:
-- FLT (Filter) = LOW
-- DEMP (De-emphasis) = LOW
-- XSMT (Soft mute) = HIGH (no mute)
-- FMT (Format) = LOW (I2S standard)
-```
-
-### Input (mic cornetta → Pi)
-
-**Opzione A — Mic a carbone originale:**
+Un **unico codec I2S WM8960** gestisce sia l'uscita (speaker cornetta, con ampli
+integrato) sia l'ingresso (mic elettrete, con bias + preamp + ADC integrati).
+L'I2S è quindi **bidirezionale** verso una sola scheda.
 
 ```
-Pi 3V3 ──┬── 470Ω ──┬── Mic+ (mic a carbone)
-         │          │
-         │       100µF (AC coupling)
-         │          │
-         │          └── Mic−
-         │              │
-         │             GND
-         │
-         └────► op-amp MCP6002 (gain ~20x)
-                       │
-                       └── ADC I2S (INMP441 ha già il preamp)
+                         ┌──────────────────────────┐
+Pi GPIO 18 (BCK) ───────►│ BCLK                     │
+Pi GPIO 19 (LRCK)───────►│ LRCLK / DACLRC / ADCLRC  │
+Pi GPIO 21 (DOUT)───────►│ DACDAT   ─► SPK+ / SPK− ──┼─► Speaker cornetta (8Ω)
+Pi GPIO 20 (DIN) ◄───────│ ADCDAT   ◄─ MIC+ / MIC− ◄─┼── Capsula elettrete
+Pi 5V  ─────────────────►│ VDD (5V)                 │
+Pi 3V3 ─────────────────►│ AVDD/DBVDD (3V3 se richiesto)
+Pi GND ─────────────────►│ GND                      │
+                         │   WM8960 (codec I2S)     │
+                         └──────────────────────────┘
 ```
 
-Più realisticamente con INMP441 (ADC I2S MEMS):
-- Il mic a carbone va prima preamplificato a livello "line" (~0.5V pp)
-- Poi entra in un ADC dedicato
-- Soluzione complessa ma autentica
+Note:
+- Alcuni moduli WM8960 hanno un jack/header mic con **bias già fornito**: collega
+  l'elettrete a `MIC+ / MIC−` (o `MIC1`), il bias lo dà il codec — niente resistore
+  o op-amp esterni.
+- Il **volume** di speaker e mic si regola da ALSA (`alsamixer -c wm8960soundcard`)
+  e dai softvol `PhoneSoftVol` / `PhoneCaptureVol` in [`asound.conf`](../firmware/config/asound.conf),
+  pilotati da `audio.speaker_gain_db` / `audio.mic_gain_db`.
 
-**Opzione B — Elettrete moderno (consigliata per chi vuole semplicità):**
+### Montaggio dell'elettrete in cornetta
 
 ```
-Pi 3V3 ──► VCC INMP441
-Pi GND ──► GND, L/R (selettore canale)
-Pi GPIO 18 ──► SCK INMP441
-Pi GPIO 19 ──► WS INMP441
-Pi GPIO 20 ──► SD INMP441 (data out → Pi DIN)
-
-L'INMP441 ha già il MEMS, il preamp e l'ADC tutto in un chip.
-Va montato al posto della capsula a carbone (stessa sede meccanica).
+Capsula elettrete 9.7 mm  →  stessa sede della vecchia capsula a carbone
+   ├─ terminale "+"  ── MIC+ del WM8960
+   └─ terminale "−"  ── MIC− / GND del WM8960
 ```
+La capsula elettrete entra nella sede meccanica Siemens praticamente identica.
+Conserva la capsula a carbone originale per un eventuale ripristino.
+
+> *Alternativa senza WM8960*: DAC PCM5102A (out) + ampli PAM8302 + mic MEMS
+> digitale INMP441 (in) come tre moduli separati sull'I2S. Più componenti; il
+> WM8960 è la via consigliata con l'elettrete.
 
 ## Cablaggio campanello
 

@@ -62,8 +62,8 @@
     │  I2C bus (GPIO 2,3) ── Display OLED│
     │                                    │
     │  I2S bus (GPIO 18,19,20,21):       │
-    │   ├─ DAC PCM5102A → PAM8302 → SPEAKER cornetta
-    │   └─ ADC INMP441 ← MICROFONO cornetta
+    │   ├─ Codec WM8960 → SPEAKER cornetta (ampli integrato)
+    │   └─ Codec WM8960 ← MIC elettrete (preamp+ADC integrati)
     │                                    │
     └────────────────────────────────────┘
             ▲
@@ -97,10 +97,10 @@
 ### Bus I2S (audio)
 | Segnale | Pin Pi (BCM) | Verso |
 |---------|--------------|-------|
-| BCK | GPIO 18 | DAC + ADC BCK |
-| LRCK | GPIO 19 | DAC + ADC LRCK |
-| DOUT | GPIO 21 | DAC DIN (Pi → speaker) |
-| DIN | GPIO 20 | ADC DOUT (mic → Pi) |
+| BCK | GPIO 18 | WM8960 BCLK |
+| LRCK | GPIO 19 | WM8960 LRCLK |
+| DOUT | GPIO 21 | WM8960 DACDAT (Pi → speaker) |
+| DIN | GPIO 20 | WM8960 ADCDAT (mic elettrete → Pi) |
 
 ### GPIO digitali
 | Segnale | Pin Pi (BCM) | Direzione | Verso |

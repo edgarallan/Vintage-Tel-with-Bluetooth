@@ -22,7 +22,7 @@ rapido: [`../assets/diagrams/09_conversion_map.svg`](../assets/diagrams/09_conve
 |--------|-----------|------|
 | **Tieni** | Disco combinatore, commutatore a gancio, campanello (campane + bobina), morsettiera, altoparlante cornetta | Da ricablare verso il Pi (vedi [`03_wiring.md`](03_wiring.md)) |
 | **Rimuovi** | Bobina d'induzione (trasformatore), condensatore + rete analogica (resistori/varistore) | Era il circuito fonia analogico, ora sostituito da Pi + I2S |
-| **Aggiungi** | Raspberry Pi Zero 2 W, DAC/ampli I2S, boost + H-bridge campanello, mic INMP441 (in cornetta) | Il Pi va nello spazio centrale liberato |
+| **Aggiungi** | Raspberry Pi Zero 2 W, codec audio WM8960, boost + H-bridge campanello, mic elettrete (in cornetta) | Il Pi va nello spazio centrale liberato |
 
 ## Mappatura completa
 
@@ -38,9 +38,9 @@ dei contatti col multimetro: vedi [`../hardware/retrofit_layout.md`](../hardware
 | 2 | Rimuovi | Bobina d'induzione / trasformatore | — |
 | 3 | Rimuovi | Condensatore + rete analogica | — |
 | 7 | Aggiungi | Raspberry Pi Zero 2 W (zona centrale) | — |
-| 8 | Aggiungi | DAC/ampli I2S (vicino auricolare) | I2S |
+| 8 | Aggiungi | Codec audio WM8960 (vicino auricolare) | I2S |
 | 9 | Aggiungi | Boost + H-bridge (vicino campanello) | — |
-| 10 | Aggiungi | Mic INMP441 (nella cornetta) | I2S |
+| 10 | Aggiungi | Mic elettrete 9.7 mm (nella cornetta) | → WM8960 |
 
 ## Procedura consigliata (l'ordine conta)
 
@@ -65,7 +65,7 @@ I numeri rimandano ai marker dell'immagine; gli Step a [`04_installation.md`](04
 |--------|-------|-------|----------|
 | 1 | **⑦ Raspberry Pi** nello spazio centrale | alimentazione 5V | il Pi avvia Raspberry Pi OS |
 | 2 | segnali a bassa tensione | ① gancio→GPIO27, ⑥ impulsi→GPIO4, NSI→GPIO17 (RC come da [`03_wiring.md`](03_wiring.md)) | `python -m src.test_hardware --monitor` (gancio + cifre) |
-| 3 | **⑩ mic INMP441** in cornetta + **⑧ DAC/ampli I2S** | bus I2S | test audio loopback |
+| 3 | **⑩ mic elettrete** in cornetta + **⑧ codec WM8960** | bus I2S | test audio loopback |
 | 4 | **⑨ boost + H-bridge** | bobina **⑤ campanello** | test campanello (3 squilli) |
 | 5 | alimentazione (batteria/USB-C) + display/LED opzionali | — | LED stato, OLED |
 | 6 | — | — | **`python -m src.test_hardware`** (tutti i 6 test) |

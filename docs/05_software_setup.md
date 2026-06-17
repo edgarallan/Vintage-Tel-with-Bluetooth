@@ -55,8 +55,10 @@ dtparam=audio=off
 # Abilita I2S
 dtparam=i2s=on
 
-# DAC PCM5102A (output speaker)
-dtoverlay=hifiberry-dac
+# Codec audio WM8960 (speaker + mic elettrete)
+# Richiede driver/overlay WM8960 (Waveshare/Seeed): se 'wm8960-soundcard' non è
+# disponibile di default, esegui lo script d'installazione del produttore.
+dtoverlay=wm8960-soundcard
 
 # Wi-Fi power management off (chiamate stabili)
 # Aggiungere riga in /etc/rc.local: iwconfig wlan0 power off
@@ -153,12 +155,15 @@ sudo cp config/asound.conf /etc/asound.conf
 
 Test audio:
 ```bash
-# Test playback
-speaker-test -D plughw:CARD=sndrpihifiberry -t sine -f 440 -c 1
+# Test playback (speaker cornetta via WM8960)
+speaker-test -D plughw:CARD=wm8960soundcard -t sine -f 440 -c 1
 
-# Test recording (se hai INMP441)
-arecord -D plughw:CARD=sndrpihifiberry -f S16_LE -r 16000 -c 1 -d 5 test.wav
-aplay -D plughw:CARD=sndrpihifiberry test.wav
+# Test recording (mic elettrete via WM8960)
+arecord -D plughw:CARD=wm8960soundcard -f S16_LE -r 16000 -c 1 -d 5 test.wav
+aplay -D plughw:CARD=wm8960soundcard test.wav
+
+# Livelli mic/speaker del codec WM8960
+alsamixer -c wm8960soundcard   # abilita "Capture", alza "Mic" e "Speaker"
 ```
 
 ## Configurazione `config.yaml`

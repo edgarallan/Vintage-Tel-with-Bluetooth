@@ -81,7 +81,7 @@ Costo stimato **~80–120 €** (vedi [BOM](docs/02_bom.md)); il telefono vintag
 1. **Apri** il telefono e **fotografa/etichetta** i fili originali → [docs/04](docs/04_installation.md)
 2. **Mappa i contatti** col multimetro (disco: impulsi + NSI; gancio; campanello ≈1700 Ω) → [docs/03](docs/03_wiring.md)
 3. **Svuota** la fascia centrale: rimuovi trasformatore + condensatore/rete analogica → [docs/07](docs/07_retrofit_layout.md)
-4. **Monta** Raspberry Pi, DAC/ampli I2S, mic in cornetta, boost + H-bridge per il campanello → [docs/04](docs/04_installation.md)
+4. **Monta** Raspberry Pi, codec audio WM8960, mic elettrete in cornetta, boost + H-bridge per il campanello → [docs/04](docs/04_installation.md)
 5. **Collauda un blocco alla volta** prima di richiudere (vedi sotto)
 
 > L'ordine consigliato (smontaggio → montaggio con verifica) è in [docs/07 · Procedura](docs/07_retrofit_layout.md#procedura-consigliata-lordine-conta).

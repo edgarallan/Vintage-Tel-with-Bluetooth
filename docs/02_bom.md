@@ -14,14 +14,19 @@ Prezzi indicativi 2026 in EUR, IVA inclusa. Acquisto consigliato: Mouser/RS/Digi
 
 | # | Componente | Quantità | Prezzo (€) | Note |
 |---|-----------|----------|-----------|------|
-| 4 | DAC I2S PCM5102A (modulo) | 1 | 6 | Output al speaker cornetta |
-| 5 | ADC I2S MEMS INMP441 oppure modulo basato su WM8960 | 1 | 8 | Input dal mic; vedi nota mic |
-| 6 | Amplificatore audio PAM8302 (mono) | 1 | 3 | Per pilotare lo speaker cornetta |
-| 7 | Capsula elettrete 9.7mm (opzionale) | 1 | 2 | Se sostituisci il mic a carbone |
+| 4 | Codec audio I2S **WM8960** (modulo/HAT) | 1 | 10 | DAC + ampli speaker **+ preamp/ADC mic** in un'unica scheda |
+| 5 | Capsula **elettrete 9.7 mm** | 1 | 2 | Microfono cornetta (sostituisce il mic a carbone) |
+| 6 | *(alternativa)* PCM5102A + PAM8302 + INMP441 | — | ~17 | Solo se **non** usi il WM8960: 3 moduli separati (DAC + ampli + mic MEMS digitale) |
 
-**Nota microfono**: ci sono due strade:
-- **Mantenere il mic a carbone originale**: serve un bias DC ~3-5V con resistore di carico ~100Ω-1kΩ, AC coupling con condensatore, e un preamp op-amp (es. MCP6002) prima dell'ADC. Suono autentico, vintage.
-- **Sostituire con elettrete moderno**: più semplice, qualità migliore, ma perde il "carattere" vintage. La sede meccanica della capsula Siemens è praticamente identica a un elettrete 9.7mm.
+**Microfono — scelta: elettrete moderno.** Un elettrete è **analogico**, e il Pi non ha
+ingresso analogico: serve un codec che faccia bias + preamp + ADC. Il **WM8960** copre
+tutto (e in più amplifica l'altoparlante), quindi una sola scheda sostituisce DAC +
+ampli + ADC mic. La capsula elettrete 9.7 mm entra nella stessa sede meccanica della
+vecchia capsula a carbone Siemens.
+
+- ✅ **Elettrete + WM8960** (scelto): semplice, qualità migliore, un solo modulo audio.
+- *Carbone originale*: suono "vintage" ma richiede bias DC + AC coupling + preamp op-amp prima del codec — più complesso.
+- *INMP441 (MEMS digitale)*: si collega diretto all'I2S ma non è un elettrete; richiede comunque un DAC/ampli separati per l'uscita.
 
 ## Alimentazione
 
