@@ -179,6 +179,7 @@ class VintageTel:
     async def _dial_loop(self):
         """Raccoglie cifre dal disco e avvia chiamata quando il numero è completo."""
         dial_timeout = self.config["dial"]["dial_timeout_s"]
+        quick_dial_timeout = self.config["dial"].get("quick_dial_timeout_s", 1.5)
 
         async for digit in self.dial.digits():
             if self.state != State.DIALING:
@@ -200,7 +201,7 @@ class VintageTel:
                 qd = self.config["phonebook"]["quick_dial"].get(digit)
                 if qd:
                     # Aspetta breve, se non arrivano altre cifre → quick dial
-                    await asyncio.sleep(1.5)
+                    await asyncio.sleep(quick_dial_timeout)
                     if self._dialed_digits == str(digit):
                         await self._place_call(qd)
                         continue
@@ -328,12 +329,27 @@ def load_config() -> dict:
         return yaml.safe_load(f)
 
 
+def _setup_logging(log_cfg: dict):
+    """Configura logging su stderr e, se indicato, su file."""
+    handlers: list[logging.Handler] = [logging.StreamHandler()]
+    log_file = log_cfg.get("log_file")
+    if log_file:
+        try:
+            handlers.append(logging.FileHandler(log_file))
+        except OSError as e:
+            logging.getLogger("vintage_tel").warning(
+                "Impossibile aprire log_file %s: %s", log_file, e
+            )
+    logging.basicConfig(
+        level=log_cfg.get("level", "INFO"),
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        handlers=handlers,
+    )
+
+
 async def main():
     config = load_config()
-    logging.basicConfig(
-        level=config.get("logging", {}).get("level", "INFO"),
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    )
+    _setup_logging(config.get("logging", {}))
 
     tel = VintageTel(config)
 

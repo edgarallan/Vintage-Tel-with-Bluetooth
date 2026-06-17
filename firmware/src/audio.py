@@ -25,10 +25,17 @@ log = logging.getLogger("audio")
 class AudioManager:
     """Genera e riproduce toni di sistema in stile telefono italiano."""
 
-    SAMPLE_RATE = 44100
+    DEFAULT_SAMPLE_RATE = 44100
+    BASE_AMPLITUDE = 0.3  # ampiezza di riferimento (gain 0 dB)
 
     def __init__(self, config: dict):
         self.config = config
+        # Allinea il sample rate al device I2S/ALSA configurato (default 44100).
+        self.sample_rate = int(config.get("sample_rate", self.DEFAULT_SAMPLE_RATE))
+        # Gain altoparlante applicato ai toni di sistema (dB → fattore lineare),
+        # con clamp per evitare clipping dell'onda generata.
+        gain_db = float(config.get("speaker_gain_db", 0))
+        self._amplitude = min(self.BASE_AMPLITUDE * (10 ** (gain_db / 20.0)), 1.0)
         self._dial_task: asyncio.Task | None = None
         self._busy_task: asyncio.Task | None = None
 
@@ -36,7 +43,8 @@ class AudioManager:
         if not AUDIO_OK:
             log.warning("sounddevice/numpy non disponibili — audio simulato")
             return
-        log.info("AudioManager pronto (sample_rate=%d)", self.SAMPLE_RATE)
+        log.info("AudioManager pronto (sample_rate=%d, ampiezza=%.2f)",
+                 self.sample_rate, self._amplitude)
 
     async def stop(self):
         await self.stop_dial_tone()
@@ -49,10 +57,10 @@ class AudioManager:
     # Ring-back IT: 425Hz, 1s on / 4s off
 
     def _tone(self, freq: float, duration_s: float) -> "np.ndarray":
-        t = np.linspace(0, duration_s, int(self.SAMPLE_RATE * duration_s), False)
+        t = np.linspace(0, duration_s, int(self.sample_rate * duration_s), False)
         # Fade in/out per evitare click
-        wave = np.sin(2 * np.pi * freq * t) * 0.3
-        fade = int(0.01 * self.SAMPLE_RATE)
+        wave = np.sin(2 * np.pi * freq * t) * self._amplitude
+        fade = int(0.01 * self.sample_rate)
         wave[:fade] *= np.linspace(0, 1, fade)
         wave[-fade:] *= np.linspace(1, 0, fade)
         return wave.astype(np.float32)
@@ -78,7 +86,7 @@ class AudioManager:
         wave = self._tone(425, 1.0)
         try:
             while True:
-                sd.play(wave, samplerate=self.SAMPLE_RATE, blocking=False)
+                sd.play(wave, samplerate=self.sample_rate, blocking=False)
                 await asyncio.sleep(1.0)
         except asyncio.CancelledError:
             pass
@@ -103,7 +111,7 @@ class AudioManager:
         wave = self._tone(425, 0.5)
         try:
             while True:
-                sd.play(wave, samplerate=self.SAMPLE_RATE, blocking=False)
+                sd.play(wave, samplerate=self.sample_rate, blocking=False)
                 await asyncio.sleep(1.0)
         except asyncio.CancelledError:
             pass
@@ -113,4 +121,4 @@ class AudioManager:
         if not AUDIO_OK:
             return
         wave = self._tone(800, 0.05)
-        sd.play(wave, samplerate=self.SAMPLE_RATE, blocking=False)
+        sd.play(wave, samplerate=self.sample_rate, blocking=False)

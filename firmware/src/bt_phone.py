@@ -41,6 +41,9 @@ class BluetoothPhone:
 
         self._bus = None
         self._loop_thread = None
+        # Event loop asyncio catturato in start(): i callback DBus girano nel
+        # thread GLib, dove asyncio.get_event_loop() fallirebbe (Python 3.12).
+        self._loop: asyncio.AbstractEventLoop | None = None
 
     async def start(self):
         if not DBUS_AVAILABLE:
@@ -48,9 +51,9 @@ class BluetoothPhone:
             return
 
         log.info("Avvio Bluetooth HFP via oFono…")
+        self._loop = asyncio.get_running_loop()
         # Esegui DBus in thread separato (GLib main loop)
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self._init_dbus)
+        await self._loop.run_in_executor(None, self._init_dbus)
 
         # Discovery iniziale del modem (cellulare accoppiato)
         await self._find_modem()
@@ -115,8 +118,9 @@ class BluetoothPhone:
 
     def _on_modem_added(self, path, properties):
         log.info("Modem aggiunto: %s", path)
-        # Re-scan
-        asyncio.run_coroutine_threadsafe(self._find_modem(), asyncio.get_event_loop())
+        # Re-scan (callback dal thread GLib → usa il loop catturato)
+        if self._loop:
+            asyncio.run_coroutine_threadsafe(self._find_modem(), self._loop)
 
     def _on_modem_removed(self, path):
         log.info("Modem rimosso: %s", path)
@@ -129,19 +133,19 @@ class BluetoothPhone:
         log.info("Call event: %s, state=%s, caller=%s", path, state, caller)
         self._current_call = path
 
-        if state == "incoming" and self.on_incoming_call:
+        if state == "incoming" and self.on_incoming_call and self._loop:
             asyncio.run_coroutine_threadsafe(
                 self.on_incoming_call(caller),
-                asyncio.get_event_loop()
+                self._loop,
             )
 
     def _on_call_removed(self, path):
         log.info("Call removed: %s", path)
         self._current_call = None
-        if self.on_call_ended:
+        if self.on_call_ended and self._loop:
             asyncio.run_coroutine_threadsafe(
                 self.on_call_ended(),
-                asyncio.get_event_loop()
+                self._loop,
             )
 
     # ─── Operazioni di chiamata ───────────────────────────────────────
@@ -152,9 +156,7 @@ class BluetoothPhone:
             return False
         try:
             vcm = dbus.Interface(self._modem, "org.ofono.VoiceCallManager")
-            await asyncio.get_event_loop().run_in_executor(
-                None, lambda: vcm.Dial(number, "default")
-            )
+            await self._run_blocking(lambda: vcm.Dial(number, "default"))
             log.info("Chiamata avviata: %s", number)
             return True
         except Exception as e:
@@ -165,13 +167,13 @@ class BluetoothPhone:
         if self._current_call:
             call = self._bus.get_object("org.ofono", self._current_call)
             iface = dbus.Interface(call, "org.ofono.VoiceCall")
-            await asyncio.get_event_loop().run_in_executor(None, iface.Answer)
+            await self._run_blocking(iface.Answer)
 
     async def reject(self):
         if self._current_call:
             call = self._bus.get_object("org.ofono", self._current_call)
             iface = dbus.Interface(call, "org.ofono.VoiceCall")
-            await asyncio.get_event_loop().run_in_executor(None, iface.Hangup)
+            await self._run_blocking(iface.Hangup)
 
     async def hangup(self):
         await self.reject()
@@ -180,6 +182,9 @@ class BluetoothPhone:
         """Invia tono DTMF durante chiamata."""
         if self._modem:
             vcm = dbus.Interface(self._modem, "org.ofono.VoiceCallManager")
-            await asyncio.get_event_loop().run_in_executor(
-                None, lambda: vcm.SendTones(digit)
-            )
+            await self._run_blocking(lambda: vcm.SendTones(digit))
+
+    async def _run_blocking(self, fn):
+        """Esegue una chiamata DBus sincrona fuori dal loop asyncio."""
+        loop = self._loop or asyncio.get_running_loop()
+        await loop.run_in_executor(None, fn)

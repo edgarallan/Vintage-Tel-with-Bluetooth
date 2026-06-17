@@ -23,7 +23,8 @@ bluetooth:
 dial:
   pulse_bouncetime_ms: 50
   digit_timeout_s: 0.4
-  dial_timeout_s: 8
+  dial_timeout_s: 8             # attesa max tra una cifra e la successiva
+  quick_dial_timeout_s: 1.5     # pausa dopo singola cifra prima del quick-dial
   zero_pulses: 10              # IT: 10 impulsi = 0
 
 # ─── Hook switch (gancio) ────────────────────────────────────────
