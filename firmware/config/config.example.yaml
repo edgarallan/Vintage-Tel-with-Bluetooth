@@ -22,8 +22,11 @@ bluetooth:
 # ─── Disco combinatore ───────────────────────────────────────────
 dial:
   pulse_bouncetime_ms: 50
-  digit_timeout_s: 0.4
-  dial_timeout_s: 8
+  digit_timeout_s: 0.4         # fallback fine-cifra: se gli impulsi si fermano
+                               # per questo tempo, la cifra è finalizzata anche
+                               # senza il rilascio NSI (0 = fallback disattivo)
+  dial_timeout_s: 8             # attesa max tra una cifra e la successiva
+  quick_dial_timeout_s: 1.5     # pausa dopo singola cifra prima del quick-dial
   zero_pulses: 10              # IT: 10 impulsi = 0
 
 # ─── Hook switch (gancio) ────────────────────────────────────────
@@ -40,10 +43,12 @@ bell:
   max_rings: 30
 
 # ─── Audio ───────────────────────────────────────────────────────
+# I gain pilotano i softvol ALSA (PhoneSoftVol / PhoneCaptureVol in asound.conf)
+# e agiscono su tutto il path cornetta: toni di sistema + audio chiamata BT/SIP.
 audio:
   sample_rate: 16000
-  mic_gain_db: 20
-  speaker_gain_db: 0
+  mic_gain_db: 20         # boost microfono cornetta (dB, max +30)
+  speaker_gain_db: 0      # livello altoparlante cornetta (dB, max 0)
 
 # ─── Display OLED ────────────────────────────────────────────────
 display:

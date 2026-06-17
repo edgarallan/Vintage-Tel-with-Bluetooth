@@ -14,9 +14,9 @@ Hardware/software retrofit that turns a 1970s Italian Siemens/FATME S62 (or simi
   - `config/asound.conf` — ALSA config copied to `/etc/asound.conf` at install
   - `systemd/vintage-tel.service` — runs `python -m src.main` as user `pi`
   - `requirements.txt`
-- `hardware/` — wiring docs (`schematic.md`, `pinout.md`, `bell_driver.md`)
-- `docs/` — install guide (`install.sh`) and operator manuals (Italian, numbered)
-- `assets/` — architecture notes + SVG assembly diagrams
+- `hardware/` — wiring docs (`schematic.md`, `pinout.md`, `bell_driver.md`, `retrofit_layout.md` = keep/remove/add map for gutting the S62 chassis)
+- `docs/` — install guide (`install.sh`) and operator manuals (Italian, numbered `01`–`07`; `07_retrofit_layout.md` = chassis conversion map)
+- `assets/` — architecture notes + SVG assembly diagrams; `assets/retrofit/` holds the S62 schematic photo, the bare-chassis photos, and the annotated conversion overlays (`cassetta_annotata.png`, `sequenza_annotata.png`)
 
 ## Commands
 
@@ -44,7 +44,7 @@ sudo systemctl {start,stop,restart,status} vintage-tel
 journalctl -u vintage-tel -f
 ```
 
-There is no test suite, linter config, or formatter wired up in this repo. If you add Python, follow PEP 8 + type hints and match the existing style (snake_case, dataclass-light, async-first).
+There is a pytest suite under `firmware/tests/` that runs **off-Pi** (the hardware drivers degrade via `try/except ImportError`, so `gpiozero`/`dbus`/`pjsua2`/`luma` aren't needed). Install `firmware/requirements-dev.txt` and run `python -m pytest` from `firmware/`; pytest/coverage config lives in `firmware/pyproject.toml`. It covers the state machine, dial reader, backend selection, phonebook, and audio config — the GPIO/DBus/PJSIP drivers themselves still need on-Pi validation via `src/test_hardware.py`. No linter/formatter is wired up. If you add Python, follow PEP 8 + type hints and match the existing style (snake_case, dataclass-light, async-first).
 
 ## Architecture
 

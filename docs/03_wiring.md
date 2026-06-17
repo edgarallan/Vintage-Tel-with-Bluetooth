@@ -45,8 +45,8 @@
 | LED_B | GPIO 7 | 26 | OUT (PWM) | LED stato — blu |
 | I2S BCK | GPIO 18 | 12 | OUT | Bit clock audio |
 | I2S LRCK | GPIO 19 | 35 | OUT | LR clock audio |
-| I2S DIN | GPIO 20 | 38 | IN | Audio dal mic ADC |
-| I2S DOUT | GPIO 21 | 40 | OUT | Audio verso DAC speaker |
+| I2S DIN | GPIO 20 | 38 | IN | Dal mic SPH0645 (DOUT del mic) |
+| I2S DOUT | GPIO 21 | 40 | OUT | All'ampli MAX98357A (DIN dell'ampli) |
 
 ## Cablaggio del disco combinatore
 
@@ -126,60 +126,45 @@ GPIO 27 = LOW → cornetta sollevata (handset up)
 GPIO 27 = HIGH → cornetta poggiata (handset down)
 ```
 
-## Cablaggio audio
+## Cablaggio audio (MAX98357A + SPH0645)
 
-### Output (Pi → speaker cornetta)
+Audio I2S **full-duplex** con due breakout che condividono i clock I2S:
+**MAX98357A** (uscita, sul DOUT del Pi) e **SPH0645** (ingresso, sul DIN del Pi).
+Collegamento **a jumper** sugli header — solo saldature through-hole, niente SMD.
 
-```
-Pi GPIO 18 (BCK) ──┐
-Pi GPIO 19 (LRCK)──┤  PCM5102A    ┌────► L OUT ──┐
-Pi GPIO 21 (DOUT)──┘   DAC I2S    │              ├── PAM8302 ──► Speaker cornetta
-                                  └────► R OUT ──┘    amp        (8Ω, 0.5W)
-Pi 5V ──────────► VCC PCM5102A
-Pi GND ─────────► GND PCM5102A
-
-Note jumper PCM5102A:
-- FLT (Filter) = LOW
-- DEMP (De-emphasis) = LOW
-- XSMT (Soft mute) = HIGH (no mute)
-- FMT (Format) = LOW (I2S standard)
-```
-
-### Input (mic cornetta → Pi)
-
-**Opzione A — Mic a carbone originale:**
+### Uscita — MAX98357A → speaker cornetta
 
 ```
-Pi 3V3 ──┬── 470Ω ──┬── Mic+ (mic a carbone)
-         │          │
-         │       100µF (AC coupling)
-         │          │
-         │          └── Mic−
-         │              │
-         │             GND
-         │
-         └────► op-amp MCP6002 (gain ~20x)
-                       │
-                       └── ADC I2S (INMP441 ha già il preamp)
+Pi GPIO 18 (BCK) ───► BCLK   ┐
+Pi GPIO 19 (LRCK)───► LRC    │ MAX98357A ─► [+ −] morsetto a vite ─► Speaker cornetta
+Pi GPIO 21 (DOUT)───► DIN    ┘
+Pi 5V  ─────────────► Vin
+Pi GND ─────────────► GND
+                       GAIN ── libero = +9 dB (collegalo a GND/Vin per altri livelli)
 ```
 
-Più realisticamente con INMP441 (ADC I2S MEMS):
-- Il mic a carbone va prima preamplificato a livello "line" (~0.5V pp)
-- Poi entra in un ADC dedicato
-- Soluzione complessa ma autentica
-
-**Opzione B — Elettrete moderno (consigliata per chi vuole semplicità):**
+### Ingresso — SPH0645 (mic MEMS) nella cornetta
 
 ```
-Pi 3V3 ──► VCC INMP441
-Pi GND ──► GND, L/R (selettore canale)
-Pi GPIO 18 ──► SCK INMP441
-Pi GPIO 19 ──► WS INMP441
-Pi GPIO 20 ──► SD INMP441 (data out → Pi DIN)
-
-L'INMP441 ha già il MEMS, il preamp e l'ADC tutto in un chip.
-Va montato al posto della capsula a carbone (stessa sede meccanica).
+Pi GPIO 18 (BCK) ───► BCLK
+Pi GPIO 19 (LRCK)───► LRCL / WS
+Pi GPIO 20 (DIN) ◄─── DOUT     (dati mic verso il Pi)
+Pi 3V3 ─────────────► 3V
+Pi GND ─────────────► GND
+                       SEL ── a GND (canale sinistro)
 ```
+
+Il breakout SPH0645 è piccolo: va montato **nella cornetta**, al posto della vecchia
+capsula a carbone (che si rimuove), con cavetto schermato verso il Pi.
+
+Note:
+- I due moduli **condividono BCLK (GPIO 18) e LRCK (GPIO 19)**; le linee dati sono
+  separate (DOUT del Pi → ampli, DIN del Pi ← mic). Overlay: `googlevoicehat-soundcard`.
+- Usano **solo l'I2S**: l'I2C (GPIO 2/3) resta dedicato al display OLED.
+- Né MAX98357A né SPH0645 hanno regolazione hardware del volume: il livello si
+  imposta dai softvol `PhoneSoftVol` / `PhoneCaptureVol` in
+  [`asound.conf`](../firmware/config/asound.conf), pilotati da
+  `audio.speaker_gain_db` / `audio.mic_gain_db`.
 
 ## Cablaggio campanello
 
@@ -226,6 +211,9 @@ Sintesi: il campanello richiede ~24V AC a 20-25Hz. Lo generiamo con:
 - Con il display sempre acceso: scendere di ~30%
 
 ## Layout fisico interno
+
+> 🗺️ Per la mappa "cosa togliere / tenere / aggiungere" sovrapposta a una foto
+> reale della cassetta S62, vedi [`07_retrofit_layout.md`](07_retrofit_layout.md).
 
 ```
         Vista dall'alto (telefono aperto)

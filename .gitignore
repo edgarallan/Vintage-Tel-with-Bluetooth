@@ -8,6 +8,10 @@ venv/
 env/
 ENV/
 .venv
+.venv*/
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Distribution / packaging
 build/

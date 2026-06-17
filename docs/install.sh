@@ -44,9 +44,13 @@ if ! grep -q "vintage-tel-bl" "$CONFIG_TXT"; then
 # vintage-tel-bl
 dtparam=audio=off
 dtparam=i2s=on
-dtoverlay=hifiberry-dac
+dtparam=i2c_arm=on
+# Audio I2S full-duplex (MAX98357A + SPH0645), overlay mainline:
+dtoverlay=googlevoicehat-soundcard
 EOF
 fi
+
+echo "→ Audio: riavvia, poi verifica la scheda con 'aplay -l' (attesa: sndrpigooglevoi)"
 
 echo "→ Aggiunta utente $PI_USER ai gruppi necessari…"
 usermod -aG gpio,i2c,spi,audio,bluetooth "$PI_USER"

@@ -35,8 +35,8 @@
 | Hook switch | GPIO 27 | 13 | Input, pull-up |
 | Audio I2S BCK | GPIO 18 | 12 | I2S |
 | Audio I2S LRCK | GPIO 19 | 35 | I2S |
-| Audio I2S DIN | GPIO 20 | 38 | I2S in (mic) |
-| Audio I2S DOUT | GPIO 21 | 40 | I2S out (speaker) |
+| Audio I2S DIN | GPIO 20 | 38 | I2S in (mic SPH0645) |
+| Audio I2S DOUT | GPIO 21 | 40 | I2S out (ampli MAX98357A) |
 | Campanello EN | GPIO 22 | 15 | Output |
 | Campanello fase | GPIO 23 | 16 | Output PWM |
 | Bottone rubrica | GPIO 24 | 18 | Input, pull-up |

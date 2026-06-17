@@ -62,8 +62,8 @@
     │  I2C bus (GPIO 2,3) ── Display OLED│
     │                                    │
     │  I2S bus (GPIO 18,19,20,21):       │
-    │   ├─ DAC PCM5102A → PAM8302 → SPEAKER cornetta
-    │   └─ ADC INMP441 ← MICROFONO cornetta
+    │   ├─ MAX98357A → SPEAKER cornetta (ampli I2S)
+    │   └─ SPH0645 (mic MEMS I2S) → MIC cornetta
     │                                    │
     └────────────────────────────────────┘
             ▲
@@ -97,10 +97,10 @@
 ### Bus I2S (audio)
 | Segnale | Pin Pi (BCM) | Verso |
 |---------|--------------|-------|
-| BCK | GPIO 18 | DAC + ADC BCK |
-| LRCK | GPIO 19 | DAC + ADC LRCK |
-| DOUT | GPIO 21 | DAC DIN (Pi → speaker) |
-| DIN | GPIO 20 | ADC DOUT (mic → Pi) |
+| BCK | GPIO 18 | MAX98357A BCLK + SPH0645 BCLK |
+| LRCK | GPIO 19 | MAX98357A LRC + SPH0645 WS |
+| DOUT | GPIO 21 | MAX98357A DIN (Pi → speaker) |
+| DIN | GPIO 20 | SPH0645 DOUT (mic → Pi) |
 
 ### GPIO digitali
 | Segnale | Pin Pi (BCM) | Direzione | Verso |

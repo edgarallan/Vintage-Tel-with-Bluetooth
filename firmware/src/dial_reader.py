@@ -38,11 +38,16 @@ class DialReader:
 
         self._pulse_count = 0
         self._dialing = False    # True quando NSI indica disco in moto
+        self._finalized = False  # cifra corrente già emessa? (anti-doppione)
         self._last_pulse_time = 0.0
         self._bounce_s = config["pulse_bouncetime_ms"] / 1000.0
+        # Fallback: se il rilascio NSI di fine-cifra è rumoroso o si perde,
+        # finalizza comunque la cifra dopo questo silenzio di impulsi.
+        self._digit_end_s = config.get("digit_timeout_s", 0.4)
 
         self._digit_queue: asyncio.Queue[int] = asyncio.Queue()
         self._new_digit_event = asyncio.Event()
+        self._fallback_handle: asyncio.TimerHandle | None = None
 
         self._pulse_btn = None
         self._nsi_btn = None
@@ -68,42 +73,29 @@ class DialReader:
                  self._pulse_gpio, self._nsi_gpio)
 
     async def stop(self):
+        self._cancel_fallback()
         if self._pulse_btn:
             self._pulse_btn.close()
         if self._nsi_btn:
             self._nsi_btn.close()
 
     def _on_nsi_start(self):
-        """Disco ha iniziato a ruotare."""
+        """Disco ha iniziato a ruotare (callback dal thread GPIO)."""
         log.debug("Disco: NSI start (rotazione iniziata)")
         self._pulse_count = 0
         self._dialing = True
+        self._finalized = False
+        if self._loop:
+            self._loop.call_soon_threadsafe(self._cancel_fallback)
 
     def _on_nsi_end(self):
-        """Disco è tornato a riposo: emetti cifra."""
+        """Disco tornato a riposo: finalizza la cifra (percorso normale)."""
         if not self._dialing:
             return
         self._dialing = False
-        count = self._pulse_count
-        log.debug("Disco: NSI end con %d impulsi", count)
-
-        if count == 0:
-            return  # Disco mosso senza completare
-
-        # Conversione: 10 impulsi = 0 (standard italiano/europeo)
-        if count >= self.config.get("zero_pulses", 10):
-            digit = 0
-        elif 1 <= count <= 9:
-            digit = count
-        else:
-            log.warning("Conta impulsi anomala: %d — scarto", count)
-            return
-
-        # Notifica al loop async
+        log.debug("Disco: NSI end con %d impulsi", self._pulse_count)
         if self._loop:
-            asyncio.run_coroutine_threadsafe(
-                self._enqueue_digit(digit), self._loop
-            )
+            self._loop.call_soon_threadsafe(self._finalize, "nsi")
 
     def _on_pulse(self):
         """Un impulso del contatto pulse (solo se in rotazione)."""
@@ -116,10 +108,51 @@ class DialReader:
         self._last_pulse_time = now
         self._pulse_count += 1
         log.debug("Disco: impulso %d", self._pulse_count)
+        # (Ri)arma il fallback di fine-cifra: scatta se gli impulsi si fermano
+        # senza che arrivi il rilascio NSI.
+        if self._loop and self._digit_end_s > 0:
+            self._loop.call_soon_threadsafe(self._arm_fallback)
 
-    async def _enqueue_digit(self, digit: int):
-        await self._digit_queue.put(digit)
+    # ─── Finalizzazione cifra (sempre sul loop, anti-doppione) ────────────
+
+    def _decode(self, count: int) -> int | None:
+        """Converte la conta impulsi in cifra (10+ → 0, convenzione IT)."""
+        if count == 0:
+            return None
+        if count >= self.config.get("zero_pulses", 10):
+            return 0
+        if 1 <= count <= 9:
+            return count
+        log.warning("Conta impulsi anomala: %d — scarto", count)
+        return None
+
+    def _finalize(self, reason: str):
+        """Emette la cifra corrente una sola volta (eseguito sul loop)."""
+        if self._finalized:
+            return
+        self._finalized = True
+        self._dialing = False
+        self._cancel_fallback()
+
+        count = self._pulse_count
+        digit = self._decode(count)
+        if digit is None:
+            return
+        log.debug("Disco: cifra %d (%d impulsi, via %s)", digit, count, reason)
+        self._digit_queue.put_nowait(digit)
         self._new_digit_event.set()
+
+    def _arm_fallback(self):
+        """Pianifica il timeout di fine-cifra (eseguito sul loop)."""
+        self._cancel_fallback()
+        self._fallback_handle = self._loop.call_later(
+            self._digit_end_s, lambda: self._finalize("timeout")
+        )
+
+    def _cancel_fallback(self):
+        if self._fallback_handle:
+            self._fallback_handle.cancel()
+            self._fallback_handle = None
 
     async def digits(self) -> AsyncIterator[int]:
         """Generator async che emette ogni cifra composta."""

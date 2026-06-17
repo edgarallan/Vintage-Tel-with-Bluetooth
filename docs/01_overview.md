@@ -13,7 +13,7 @@ Il telefono SIP Siemens grigio degli anni '70 è un capolavoro di ingegneria ele
 │  ┌──────────────┐    ┌─────────────────┐    ┌───────────────┐ │
 │  │   CORNETTA   │    │  DISCO COMBIN.  │    │  CAMPANELLO   │ │
 │  │              │    │                 │    │  (24V AC)     │ │
-│  │ • Mic carbone│    │ • Contatto      │    │               │ │
+│  │ • Mic I2S    │    │ • Contatto      │    │               │ │
 │  │ • Speaker    │    │   pulse (NSI)   │    │               │ │
 │  │ • Hook switch│    │ • Contatto      │    │               │ │
 │  │              │    │   off-normal    │    │               │ │
@@ -117,11 +117,10 @@ Le funzionalità "Massimo" richiedono:
 L'ESP32 può fare BT audio ma non SIP + HFP + rubrica contemporaneamente in modo affidabile.
 
 ### Perché I2S e non l'audio analogico del Pi?
-Il Pi Zero non ha jack audio. L'I2S con un DAC dedicato (PCM5102A) dà qualità audio molto migliore e bassa latenza — fondamentale per le chiamate.
+Il Pi Zero non ha jack audio. L'I2S dà qualità migliore e bassa latenza — fondamentale per le chiamate. Usiamo due breakout I2S: **MAX98357A** (ampli/speaker) e **SPH0645** (mic MEMS), full-duplex con l'overlay `googlevoicehat-soundcard`.
 
-### Perché conservare il microfono a carbone?
-Per fedeltà vintage. Suona "telefonico" in modo autentico. Richiede però un bias DC e un preamp.
-*Alternativa:* sostituire con elettrete da 9.7mm che entra nella stessa sede meccanica.
+### Microfono: MEMS I2S nella cornetta
+La capsula a carbone viene **rimossa** e sostituita dal breakout **SPH0645** montato nella cornetta: è digitale (niente codec/ADC analogico), si collega solo a jumper sull'I2S e dà un microfono moderno dove serve, cioè nel microtelefono.
 
 ### Perché tenere il campanello originale?
 Perché è bellissimo. Richiede un boost converter che generi ~24V AC a 20-25Hz, oppure una soluzione più semplice con due bobine pilotate in alternanza da un H-bridge.

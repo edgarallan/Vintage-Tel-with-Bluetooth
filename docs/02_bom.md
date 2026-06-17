@@ -14,14 +14,15 @@ Prezzi indicativi 2026 in EUR, IVA inclusa. Acquisto consigliato: Mouser/RS/Digi
 
 | # | Componente | Quantità | Prezzo (€) | Note |
 |---|-----------|----------|-----------|------|
-| 4 | DAC I2S PCM5102A (modulo) | 1 | 6 | Output al speaker cornetta |
-| 5 | ADC I2S MEMS INMP441 oppure modulo basato su WM8960 | 1 | 8 | Input dal mic; vedi nota mic |
-| 6 | Amplificatore audio PAM8302 (mono) | 1 | 3 | Per pilotare lo speaker cornetta |
-| 7 | Capsula elettrete 9.7mm (opzionale) | 1 | 2 | Se sostituisci il mic a carbone |
+| 4 | Ampli I2S **MAX98357A** (breakout, es. Adafruit 3006) | 1 | 6 | Uscita speaker cornetta; speaker su **morsetto a vite** |
+| 5 | Mic MEMS I2S **SPH0645** (breakout, es. Adafruit 3421) | 1 | 7 | Microfono, montato **nella cornetta** |
 
-**Nota microfono**: ci sono due strade:
-- **Mantenere il mic a carbone originale**: serve un bias DC ~3-5V con resistore di carico ~100Ω-1kΩ, AC coupling con condensatore, e un preamp op-amp (es. MCP6002) prima dell'ADC. Suono autentico, vintage.
-- **Sostituire con elettrete moderno**: più semplice, qualità migliore, ma perde il "carattere" vintage. La sede meccanica della capsula Siemens è praticamente identica a un elettrete 9.7mm.
+**Audio — due breakout I2S (minima saldatura).** Mic e speaker sono due moduli I2S
+separati, collegati **a jumper** (solo saldature through-hole degli header, niente SMD):
+
+- **MAX98357A** — ampli Class-D: lo speaker della cornetta (50-200 Ω) va sul morsetto a vite. Pin `GAIN` lasciato libero = +9 dB (regolabile).
+- **SPH0645** — microfono MEMS digitale, piccolo: montato nella cornetta al posto della capsula a carbone (pin `SEL` → GND = canale sinistro).
+- Usano **solo l'I2S** (GPIO 18/19/20/21), full-duplex con overlay mainline `googlevoicehat-soundcard` (card `sndrpigooglevoi`); nessun codec/I2C audio, l'I2C resta libero per il display.
 
 ## Alimentazione
 

@@ -21,6 +21,10 @@ Il Siemens grigio ha tipicamente 2 viti sul fondo (testa cilindrica, dimensione 
    - Hook switch (sotto la culla della cornetta)
    - Bornier di connessione (dove arrivano i fili della cornetta e della linea)
 
+> 🗺️ **Mappa di conversione**: prima di rimuovere qualsiasi cosa, consulta
+> [`07_retrofit_layout.md`](07_retrofit_layout.md) — foto annotata con cosa
+> togliere, cosa tenere e dove sistemare i componenti nuovi.
+
 ## Step 2 — Mappatura dei contatti originali
 
 ![Mappa dei contatti](../assets/diagrams/02_contacts_map.svg)
@@ -62,7 +66,7 @@ Prima di rimontare con l'elettronica nuova, vale la pena:
 
 Salda su perfboard 7x9cm:
 1. Resistori pull-up + condensatori per disco e hook (vedi `03_wiring.md`)
-2. PAM8302 (amplificatore speaker)
+2. Breakout audio **MAX98357A** (ampli/speaker) e **SPH0645** (mic I2S)
 3. Connettori JST-XH per i cavi modulari verso il Pi e verso i componenti originali
 
 Crea **almeno 5 JST sul perfboard**:
@@ -110,18 +114,17 @@ Test funzionamento PRIMA di rimontare tutto:
 
 ![Connessioni audio](../assets/diagrams/07_audio_wiring.svg)
 
-### Opzione A — Mic a carbone originale (autentico)
-1. Connetti i fili del mic al circuito di bias + preamp sulla perfboard
-2. Output del preamp → ingresso analogico di un ADC esterno → I2S al Pi
-3. Questa opzione richiede un modulo aggiuntivo come WM8960 (HAT audio I2S con codec completo)
+> Il diagramma illustra il principio (DAC/ampli I2S in uscita + mic I2S in
+> ingresso). I moduli attuali sono **MAX98357A** (uscita) e **SPH0645** (mic).
 
-### Opzione B — INMP441 al posto del mic originale (semplice)
-1. Smonta la capsula a carbone (di solito si svita o si estrae)
-2. Pratica supporto stampato 3D o adatta il modulo INMP441 nella sede originale
-3. Connetti via I2S direttamente al Pi
-4. Conserva la capsula originale per ripristino futuro
+Audio I2S full-duplex a due breakout: **MAX98357A** (ampli/speaker) e **SPH0645**
+(mic MEMS). Solo collegamenti a jumper, niente SMD.
 
-**Per lo speaker**: lo speaker originale è quasi sempre 50-200Ω. Connettilo direttamente all'uscita del PAM8302 — funziona benissimo, non serve adattamento.
+1. **Rimuovi** la capsula a carbone dalla cornetta (si svita o si estrae).
+2. Monta il breakout **SPH0645** nella sede del microfono della cornetta (adattatore stampato 3D se serve); porta i fili al Pi con cavetto schermato. `SEL` a GND.
+3. Monta il **MAX98357A** nella base; collega lo **speaker della cornetta** (50-200Ω) al suo **morsetto a vite** (+/−), nessun adattamento.
+4. Collega entrambi al Pi **a jumper** condividendo BCLK/LRCK: MAX98357A su DOUT (GPIO21), SPH0645 su DIN (GPIO20) — vedi [`03_wiring.md`](03_wiring.md). Usano solo l'I2S, i GPIO di disco/gancio/campanello/LED restano liberi.
+5. Abilita l'overlay `googlevoicehat-soundcard` e verifica la scheda con `aplay -l` (`sndrpigooglevoi`) — vedi [`05_software_setup.md`](05_software_setup.md).
 
 ## Step 9 — Display OLED (opzionale)
 

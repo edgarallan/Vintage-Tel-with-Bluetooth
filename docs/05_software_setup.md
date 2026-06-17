@@ -52,15 +52,31 @@ Aggiungi in fondo:
 # Disabilita audio integrato (non c'è jack sul Pi Zero)
 dtparam=audio=off
 
-# Abilita I2S
+# Abilita I2S (audio) e I2C (display OLED)
 dtparam=i2s=on
+dtparam=i2c_arm=on
 
-# DAC PCM5102A (output speaker)
-dtoverlay=hifiberry-dac
+# Audio full-duplex I2S: ampli MAX98357A (out) + mic MEMS SPH0645 (in).
+# Overlay MAINLINE (già incluso in Raspberry Pi OS), nessun driver da compilare.
+dtoverlay=googlevoicehat-soundcard
 
 # Wi-Fi power management off (chiamate stabili)
 # Aggiungere riga in /etc/rc.local: iwconfig wlan0 power off
 ```
+
+Dopo il riavvio, **verifica** la scheda ALSA:
+
+```bash
+aplay -l        # atteso: card X: sndrpigooglevoi
+arecord -l      # stessa card per il mic (full-duplex)
+```
+
+Se il nome differisce da `sndrpigooglevoi`, aggiorna `firmware/config/asound.conf`
+(campi `card` e `hw:CARD=...`).
+
+> **Collegamento:** i due breakout si collegano **a jumper** sui soli pin I2S
+> (GPIO 18/19/20/21) + alimentazione. L'I2C (GPIO 2/3) resta per il solo display.
+> Schema in [03_wiring.md](03_wiring.md).
 
 ## Configurazione PJSIP (VoIP SIP)
 
@@ -153,12 +169,15 @@ sudo cp config/asound.conf /etc/asound.conf
 
 Test audio:
 ```bash
-# Test playback
-speaker-test -D plughw:CARD=sndrpihifiberry -t sine -f 440 -c 1
+# Test playback (speaker cornetta via MAX98357A)
+speaker-test -D plughw:CARD=sndrpigooglevoi -t sine -f 440 -c 1
 
-# Test recording (se hai INMP441)
-arecord -D plughw:CARD=sndrpihifiberry -f S16_LE -r 16000 -c 1 -d 5 test.wav
-aplay -D plughw:CARD=sndrpihifiberry test.wav
+# Test recording (mic SPH0645 nella cornetta)
+arecord -D plughw:CARD=sndrpigooglevoi -f S16_LE -r 16000 -c 1 -d 5 test.wav
+aplay -D plughw:CARD=sndrpigooglevoi test.wav
+
+# Livelli (i softvol di asound.conf li gestisce anche audio.py via mic/speaker_gain_db)
+alsamixer -c sndrpigooglevoi
 ```
 
 ## Configurazione `config.yaml`
