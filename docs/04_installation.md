@@ -21,6 +21,10 @@ Il Siemens grigio ha tipicamente 2 viti sul fondo (testa cilindrica, dimensione 
    - Hook switch (sotto la culla della cornetta)
    - Bornier di connessione (dove arrivano i fili della cornetta e della linea)
 
+> 🗺️ **Mappa di conversione**: prima di rimuovere qualsiasi cosa, consulta
+> [`07_retrofit_layout.md`](07_retrofit_layout.md) — foto annotata con cosa
+> togliere, cosa tenere e dove sistemare i componenti nuovi.
+
 ## Step 2 — Mappatura dei contatti originali
 
 ![Mappa dei contatti](../assets/diagrams/02_contacts_map.svg)

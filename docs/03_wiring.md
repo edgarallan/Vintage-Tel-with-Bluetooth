@@ -227,6 +227,9 @@ Sintesi: il campanello richiede ~24V AC a 20-25Hz. Lo generiamo con:
 
 ## Layout fisico interno
 
+> 🗺️ Per la mappa "cosa togliere / tenere / aggiungere" sovrapposta a una foto
+> reale della cassetta S62, vedi [`07_retrofit_layout.md`](07_retrofit_layout.md).
+
 ```
         Vista dall'alto (telefono aperto)
         

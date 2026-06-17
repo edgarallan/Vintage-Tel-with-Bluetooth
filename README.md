@@ -32,11 +32,13 @@ vintage_tel_bl/
 │   ├── 03_wiring.md             ← schema di cablaggio
 │   ├── 04_installation.md       ← guida montaggio passo-passo
 │   ├── 05_software_setup.md     ← installazione e configurazione software
-│   └── 06_troubleshooting.md    ← problemi comuni
+│   ├── 06_troubleshooting.md    ← problemi comuni
+│   └── 07_retrofit_layout.md    ← mappa conversione cassetta (foto annotata)
 ├── hardware/
 │   ├── schematic.md             ← schema elettrico testuale
 │   ├── pinout.md                ← mappatura GPIO
-│   └── bell_driver.md           ← circuito driver campanello 24VAC
+│   ├── bell_driver.md           ← circuito driver campanello 24VAC
+│   └── retrofit_layout.md       ← cosa togliere/tenere/aggiungere nella cassetta
 ├── firmware/
 │   ├── src/
 │   │   ├── main.py              ← orchestratore principale
@@ -53,9 +55,12 @@ vintage_tel_bl/
 │   │   └── asound.conf          ← configurazione ALSA
 │   ├── systemd/
 │   │   └── vintage-tel.service  ← servizio systemd
-│   └── requirements.txt
+│   ├── tests/                  ← suite pytest (off-Pi)
+│   ├── requirements.txt
+│   └── requirements-dev.txt    ← dipendenze test
 └── assets/
-    └── architecture.md          ← diagramma architettura
+    ├── architecture.md          ← diagramma architettura
+    └── retrofit/                ← foto S62 + cassetta annotata (mappa conversione)
 ```
 
 ## Guida visiva al montaggio
@@ -72,6 +77,8 @@ Otto diagrammi tecnici step-by-step in [`assets/diagrams/`](assets/diagrams/):
 | 6 | [Driver campanello](assets/diagrams/06_bell_driver_schematic.svg) | Boost + H-bridge → bobine |
 | 7 | [Connessioni audio](assets/diagrams/07_audio_wiring.svg) | DAC, ADC e cornetta |
 | 8 | [Posizionamento display OLED](assets/diagrams/08_oled_placement_options.svg) | Tre opzioni di montaggio |
+
+📷 **Mappa di conversione su foto reale**: [`docs/07_retrofit_layout.md`](docs/07_retrofit_layout.md) — cosa togliere/tenere/aggiungere nella cassetta S62 (verde/rosso/blu).
 
 ## Quick start
 
