@@ -8,8 +8,15 @@ e il campanello originali.
 
 ![Cassetta S62 annotata](../assets/retrofit/cassetta_annotata.png)
 
-> Verde = tenere · Rosso = rimuovere · Blu = nuovo. Le posizioni dei riquadri
+Vista più chiara (angolazione diversa) con la stessa numerazione:
+
+![Sequenza annotata](../assets/retrofit/sequenza_annotata.png)
+
+> Verde = tenere · Rosso = rimuovere · Blu = nuovo. Le posizioni dei marker
 > sono **indicative**: verifica sempre sul tuo esemplare prima di tagliare.
+>
+> 🔧 Per l'**ordine** delle operazioni (smontaggio → montaggio, con collaudo a
+> ogni passo) vedi la procedura in [`../docs/07_retrofit_layout.md`](../docs/07_retrofit_layout.md).
 
 Materiale di riferimento:
 - Schema originale Siemens S62: [`../assets/retrofit/s62_schema.jpg`](../assets/retrofit/s62_schema.jpg)

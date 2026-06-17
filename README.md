@@ -78,7 +78,7 @@ Otto diagrammi tecnici step-by-step in [`assets/diagrams/`](assets/diagrams/):
 | 7 | [Connessioni audio](assets/diagrams/07_audio_wiring.svg) | DAC, ADC e cornetta |
 | 8 | [Posizionamento display OLED](assets/diagrams/08_oled_placement_options.svg) | Tre opzioni di montaggio |
 
-📷 **Mappa di conversione su foto reale**: [`docs/07_retrofit_layout.md`](docs/07_retrofit_layout.md) — cosa togliere/tenere/aggiungere nella cassetta S62 (verde/rosso/blu).
+📷 **Mappa di conversione su foto reale + procedura ordinata**: [`docs/07_retrofit_layout.md`](docs/07_retrofit_layout.md) — cosa togliere/tenere/aggiungere nella cassetta S62 (verde/rosso/blu) e in che ordine smontare e montare, con collaudo a ogni passo.
 
 ## Quick start
 

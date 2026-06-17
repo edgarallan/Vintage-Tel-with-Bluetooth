@@ -16,7 +16,7 @@ Hardware/software retrofit that turns a 1970s Italian Siemens/FATME S62 (or simi
   - `requirements.txt`
 - `hardware/` — wiring docs (`schematic.md`, `pinout.md`, `bell_driver.md`, `retrofit_layout.md` = keep/remove/add map for gutting the S62 chassis)
 - `docs/` — install guide (`install.sh`) and operator manuals (Italian, numbered `01`–`07`; `07_retrofit_layout.md` = chassis conversion map)
-- `assets/` — architecture notes + SVG assembly diagrams; `assets/retrofit/` holds the S62 schematic photo, the bare-chassis photo, and the annotated conversion overlay (`cassetta_annotata.png`)
+- `assets/` — architecture notes + SVG assembly diagrams; `assets/retrofit/` holds the S62 schematic photo, the bare-chassis photos, and the annotated conversion overlays (`cassetta_annotata.png`, `sequenza_annotata.png`)
 
 ## Commands
 

@@ -6,8 +6,12 @@ cosa togliere, cosa tenere e dove sistemare i componenti nuovi.
 
 ![Cassetta S62 annotata](../assets/retrofit/cassetta_annotata.png)
 
+Vista più chiara (stesso modello, angolazione diversa) con gli stessi numeri:
+
+![Sequenza annotata](../assets/retrofit/sequenza_annotata.png)
+
 > 🟩 verde = tenere · 🟥 rosso = rimuovere · 🟦 blu = nuovo.
-> Le posizioni sono **indicative**: verifica sempre sul tuo esemplare.
+> Le posizioni dei marker sono **indicative**: verifica sempre sul tuo esemplare.
 
 ## In breve
 
@@ -34,6 +38,37 @@ dei contatti col multimetro: vedi [`../hardware/retrofit_layout.md`](../hardware
 | 8 | Aggiungi | DAC/ampli I2S (vicino auricolare) | I2S |
 | 9 | Aggiungi | Boost + H-bridge (vicino campanello) | — |
 | 10 | Aggiungi | Mic INMP441 (nella cornetta) | I2S |
+
+## Procedura consigliata (l'ordine conta)
+
+Idea di fondo: **prima svuoti** la fascia centrale (parti analogiche), **poi
+popoli** lo spazio col Pi, cablando e collaudando **un sottosistema alla volta**.
+I numeri rimandano ai marker dell'immagine; gli Step a [`04_installation.md`](04_installation.md).
+
+### Fase A — Smontaggio (sicuro, reversibile)
+
+0. **Fotografa ed etichetta** tutti i fili prima di staccare (04 · Step 1–2).
+1. Assicurati che il telefono **non sia collegato alla linea**; nessuna tensione presente.
+2. Rimuovi **③ condensatore + rete analogica** (resistori/varistore): annota i fili, poi dissalda/scollega.
+3. Rimuovi **② bobina d'induzione (trasformatore)**.
+4. Scollega il **⑤ campanello dalla linea** (lascia bobina e campane in sede): i due capi della bobina andranno all'H-bridge.
+5. **Isola i contatti** di **① gancio** e **⑥ disco** che userai; scollega il resto dal circuito originale.
+
+➡️ Risultato: nello chassis restano solo **disco, gancio, campanello, morsettiera**; la fascia centrale è libera.
+
+### Fase B — Montaggio (un blocco alla volta, con collaudo)
+
+| Ordine | Monta | Cabla | Verifica |
+|--------|-------|-------|----------|
+| 1 | **⑦ Raspberry Pi** nello spazio centrale | alimentazione 5V | il Pi avvia Raspberry Pi OS |
+| 2 | segnali a bassa tensione | ① gancio→GPIO27, ⑥ impulsi→GPIO4, NSI→GPIO17 (RC come da [`03_wiring.md`](03_wiring.md)) | `python -m src.test_hardware --monitor` (gancio + cifre) |
+| 3 | **⑩ mic INMP441** in cornetta + **⑧ DAC/ampli I2S** | bus I2S | test audio loopback |
+| 4 | **⑨ boost + H-bridge** | bobina **⑤ campanello** | test campanello (3 squilli) |
+| 5 | alimentazione (batteria/USB-C) + display/LED opzionali | — | LED stato, OLED |
+| 6 | — | — | **`python -m src.test_hardware`** (tutti i 6 test) |
+| 7 | chiusura | fascette; verifica che i cavi non tocchino il martelletto | il disco gira libero |
+
+> Collauda **prima** di richiudere il coperchio (04 · Step 10): rilavorare a cassetta aperta costa molto meno.
 
 ## Materiale di riferimento
 
