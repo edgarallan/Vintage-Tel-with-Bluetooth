@@ -8,8 +8,8 @@ che dialogano direttamente con il dispositivo audio I2S.
 
 import asyncio
 import logging
+import shutil
 import subprocess
-from pathlib import Path
 
 try:
     import numpy as np
@@ -26,25 +26,53 @@ class AudioManager:
     """Genera e riproduce toni di sistema in stile telefono italiano."""
 
     DEFAULT_SAMPLE_RATE = 44100
-    BASE_AMPLITUDE = 0.3  # ampiezza di riferimento (gain 0 dB)
+    TONE_AMPLITUDE = 0.3  # ampiezza fissa dei toni; il volume è gestito da ALSA
+
+    # Controlli softvol definiti in config/asound.conf
+    SPEAKER_CONTROL = "PhoneSoftVol"
+    CAPTURE_CONTROL = "PhoneCaptureVol"
 
     def __init__(self, config: dict):
         self.config = config
         # Allinea il sample rate al device I2S/ALSA configurato (default 44100).
         self.sample_rate = int(config.get("sample_rate", self.DEFAULT_SAMPLE_RATE))
-        # Gain altoparlante applicato ai toni di sistema (dB → fattore lineare),
-        # con clamp per evitare clipping dell'onda generata.
-        gain_db = float(config.get("speaker_gain_db", 0))
-        self._amplitude = min(self.BASE_AMPLITUDE * (10 ** (gain_db / 20.0)), 1.0)
+        # I gain pilotano il softvol ALSA, che agisce sull'intero path della
+        # cornetta (toni di sistema + audio della chiamata Bluetooth/SIP).
+        self._speaker_gain_db = float(config.get("speaker_gain_db", 0))
+        self._mic_gain_db = float(config.get("mic_gain_db", 0))
         self._dial_task: asyncio.Task | None = None
         self._busy_task: asyncio.Task | None = None
 
     async def start(self):
+        self._apply_alsa_volume()
         if not AUDIO_OK:
             log.warning("sounddevice/numpy non disponibili — audio simulato")
             return
-        log.info("AudioManager pronto (sample_rate=%d, ampiezza=%.2f)",
-                 self.sample_rate, self._amplitude)
+        log.info("AudioManager pronto (sample_rate=%d)", self.sample_rate)
+
+    # ─── Volume cornetta via softvol ALSA ─────────────────────────────
+    @staticmethod
+    def _build_volume_cmd(control: str, gain_db: float) -> list[str]:
+        """Comando amixer per impostare un controllo softvol a un livello in dB."""
+        return ["amixer", "-D", "default", "--", "sset", control, f"{gain_db}dB"]
+
+    def _apply_alsa_volume(self):
+        """Imposta i softvol di altoparlante e microfono dai gain in config."""
+        if not shutil.which("amixer"):
+            log.info("amixer non disponibile — salto impostazione volume ALSA")
+            return
+        self._set_softvol(self.SPEAKER_CONTROL, self._speaker_gain_db)
+        self._set_softvol(self.CAPTURE_CONTROL, self._mic_gain_db)
+
+    def _set_softvol(self, control: str, gain_db: float):
+        try:
+            subprocess.run(
+                self._build_volume_cmd(control, gain_db),
+                check=True, capture_output=True,
+            )
+            log.info("Volume ALSA %s = %+g dB", control, gain_db)
+        except (subprocess.CalledProcessError, OSError) as e:
+            log.warning("Impossibile impostare %s: %s", control, e)
 
     async def stop(self):
         await self.stop_dial_tone()
@@ -59,7 +87,7 @@ class AudioManager:
     def _tone(self, freq: float, duration_s: float) -> "np.ndarray":
         t = np.linspace(0, duration_s, int(self.sample_rate * duration_s), False)
         # Fade in/out per evitare click
-        wave = np.sin(2 * np.pi * freq * t) * self._amplitude
+        wave = np.sin(2 * np.pi * freq * t) * self.TONE_AMPLITUDE
         fade = int(0.01 * self.sample_rate)
         wave[:fade] *= np.linspace(0, 1, fade)
         wave[-fade:] *= np.linspace(1, 0, fade)
