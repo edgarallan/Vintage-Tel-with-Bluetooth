@@ -1,0 +1,402 @@
+# Instincts generated from https://github.com/edgarallan/Vintage-Tel-with-Bluetooth
+# Generated: 2026-06-17T03:02:36.003Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: Vintage-Tel-with-Bluetooth-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: fix, test
+
+## Evidence
+
+- 3 commits analyzed
+- Detected conventional commit pattern
+- Examples: fix: correttezza loop asyncio, media audio SIP e config ignorata, test: suite pytest della state machine + dial reader
+
+---
+id: Vintage-Tel-with-Bluetooth-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Commit Length
+
+## Action
+
+Write moderate-length commit messages (~54 characters)
+
+## Evidence
+
+- Average commit message length: 54 chars
+- Based on 3 commits
+
+---
+id: Vintage-Tel-with-Bluetooth-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: Vintage-Tel-with-Bluetooth-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: Vintage-Tel-with-Bluetooth-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: Vintage-Tel-with-Bluetooth-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: Vintage-Tel-with-Bluetooth-workflow-feature-implementation-with-tests
+trigger: "when doing feature implementation with tests"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Workflow Feature Implementation With Tests
+
+## Action
+
+Follow the feature-implementation-with-tests workflow:
+1. Modify or add implementation files in firmware/src/
+2. Create or update test files in firmware/tests/ to cover the new or changed functionality
+3. Update configuration or example files if needed (e.g., config.example.yaml)
+4. Commit both the implementation and tests together
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: firmware/src/*.py, firmware/tests/test_*.py
+
+---
+id: vintage-tel-with-bluetooth-instinct-file-naming
+trigger: "When creating or renaming a Python file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct File Naming
+
+## Action
+
+Use snake_case for file names
+
+## Evidence
+
+- Pattern in namingConventions.files: snake_case
+
+---
+id: vintage-tel-with-bluetooth-instinct-function-naming
+trigger: "When defining a function"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Function Naming
+
+## Action
+
+Use camelCase for function names
+
+## Evidence
+
+- Pattern in namingConventions.functions: camelCase
+
+---
+id: vintage-tel-with-bluetooth-instinct-class-naming
+trigger: "When defining a class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Class Naming
+
+## Action
+
+Use PascalCase for class names
+
+## Evidence
+
+- Pattern in namingConventions.classes: PascalCase
+
+---
+id: vintage-tel-with-bluetooth-instinct-constant-naming
+trigger: "When defining a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Constant Naming
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constant names
+
+## Evidence
+
+- Pattern in namingConventions.constants: SCREAMING_SNAKE_CASE
+
+---
+id: vintage-tel-with-bluetooth-instinct-import-style
+trigger: "When importing modules within the package"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Import Style
+
+## Action
+
+Use relative imports
+
+## Evidence
+
+- Pattern in importStyle: relative
+
+---
+id: vintage-tel-with-bluetooth-instinct-export-style
+trigger: "When exporting functions or classes"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle: named
+
+---
+id: vintage-tel-with-bluetooth-instinct-test-location
+trigger: "When adding or updating tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Test Location
+
+## Action
+
+Place test files in firmware/tests/ with names starting with test_
+
+## Evidence
+
+- Pattern in folderStructure.testLocation: mixed
+- Pattern in files: firmware/tests/test_*.py
+
+---
+id: vintage-tel-with-bluetooth-instinct-test-type
+trigger: "When writing tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Test Type
+
+## Action
+
+Write unit tests for new or changed functionality
+
+## Evidence
+
+- Pattern in testTypes: unit
+
+---
+id: vintage-tel-with-bluetooth-instinct-test-framework
+trigger: "When choosing a test framework"
+confidence: 0.5
+domain: testing
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Test Framework
+
+## Action
+
+Default to pytest unless otherwise specified
+
+## Evidence
+
+- Example commit: test: suite pytest della state machine + dial reader
+- Framework: unknown
+
+---
+id: vintage-tel-with-bluetooth-instinct-commit-prefix-fix
+trigger: "When committing a bug fix"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Commit Prefix Fix
+
+## Action
+
+Prefix the commit message with 'fix:'
+
+## Evidence
+
+- Commit example: fix: correttezza loop asyncio, media audio SIP e config ignorata
+
+---
+id: vintage-tel-with-bluetooth-instinct-commit-prefix-test
+trigger: "When committing new or updated tests"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Commit Prefix Test
+
+## Action
+
+Prefix the commit message with 'test:'
+
+## Evidence
+
+- Commit example: test: suite pytest della state machine + dial reader
+
+---
+id: vintage-tel-with-bluetooth-instinct-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Commit Length
+
+## Action
+
+Keep the commit message concise (around 54 characters on average)
+
+## Evidence
+
+- Pattern in commits.averageLength: 54
+
+---
+id: vintage-tel-with-bluetooth-instinct-feature-with-tests-workflow
+trigger: "When adding a new feature or fixing a bug and ensuring it is covered by tests"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: edgarallan/Vintage-Tel-with-Bluetooth
+---
+
+# Vintage Tel With Bluetooth Instinct Feature With Tests Workflow
+
+## Action
+
+Modify or add implementation files in firmware/src/, create or update test files in firmware/tests/ for the new or changed functionality, update configuration/example files if needed, and commit both implementation and tests together
+
+## Evidence
+
+- Workflow: feature-implementation-with-tests
+- Commit sequence and file patterns in workflow
+
