@@ -1,0 +1,6 @@
+interface:
+  display_name: "Vintage Tel With Bluetooth"
+  short_description: "Repo-specific patterns and workflows for Vintage-Tel-with-Bluetooth"
+  default_prompt: "Use the Vintage-Tel-with-Bluetooth repo skill to follow existing architecture, testing, and workflow conventions."
+policy:
+  allow_implicit_invocation: true
