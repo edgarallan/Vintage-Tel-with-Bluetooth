@@ -6,6 +6,7 @@ Conserva nome → numero e permette lookup inverso quando arriva chiamata.
 
 import logging
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 
@@ -20,7 +21,7 @@ class Phonebook:
         self._init_db()
 
     def _init_db(self):
-        with sqlite3.connect(self.db_path) as conn:
+        with closing(sqlite3.connect(self.db_path)) as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS contacts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +34,7 @@ class Phonebook:
         log.info("Rubrica inizializzata: %s", self.db_path)
 
     def add(self, name: str, number: str, quick_dial: int | None = None):
-        with sqlite3.connect(self.db_path) as conn:
+        with closing(sqlite3.connect(self.db_path)) as conn:
             try:
                 conn.execute(
                     "INSERT INTO contacts (name, number, quick_dial) VALUES (?, ?, ?)",
@@ -49,7 +50,7 @@ class Phonebook:
         normalized = "".join(c for c in number if c.isdigit())[-9:]
         if not normalized:
             return None
-        with sqlite3.connect(self.db_path) as conn:
+        with closing(sqlite3.connect(self.db_path)) as conn:
             row = conn.execute(
                 "SELECT name FROM contacts WHERE number LIKE ?",
                 (f"%{normalized}",),
@@ -58,7 +59,7 @@ class Phonebook:
 
     def quick_dial(self, digit: int) -> str | None:
         """Lookup quick-dial. Prima controlla DB, poi config."""
-        with sqlite3.connect(self.db_path) as conn:
+        with closing(sqlite3.connect(self.db_path)) as conn:
             row = conn.execute(
                 "SELECT number FROM contacts WHERE quick_dial = ?",
                 (digit,),
@@ -68,7 +69,7 @@ class Phonebook:
         return self.config.get("quick_dial", {}).get(digit)
 
     def all_contacts(self) -> list[dict]:
-        with sqlite3.connect(self.db_path) as conn:
+        with closing(sqlite3.connect(self.db_path)) as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute("SELECT * FROM contacts ORDER BY name").fetchall()
         return [dict(r) for r in rows]
