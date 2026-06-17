@@ -16,7 +16,7 @@ from fakes import FakeBell, FakeDial, FakeHook, make_config  # noqa: E402
 def tel(tmp_path):
     """VintageTel con hardware finto (hook/dial/bell) e display/LED disattivi.
 
-    I backend bt/sip vanno impostati dal singolo test (tel.bt = FakeBackend()).
+    Il backend BT va impostato dal singolo test (tel.bt = FakeBackend()).
     """
     cfg = make_config()
     cfg["phonebook"]["db_path"] = str(tmp_path / "phonebook.db")

@@ -76,7 +76,7 @@ class FakeBell:
 
 
 class FakeBackend:
-    """Backend BT/SIP che registra le azioni invocate."""
+    """Backend Bluetooth che registra le azioni invocate."""
 
     def __init__(self, *, connected=True, registered=True, place_ok=True):
         self.connected = connected
@@ -106,13 +106,12 @@ class FakeBackend:
         self.actions.append(("dtmf", digit))
 
 
-def make_config(mode: str = "hybrid") -> dict:
+def make_config() -> dict:
     """Config minima ma completa per costruire VintageTel nei test.
 
     Timeout volutamente piccoli per test veloci e deterministici.
     """
     return {
-        "mode": mode,
         "hook": {"inverted": False, "debounce_ms": 100},
         "dial": {
             "pulse_bouncetime_ms": 0,
@@ -127,7 +126,6 @@ def make_config(mode: str = "hybrid") -> dict:
         "audio": {"sample_rate": 16000},
         "phonebook": {"db_path": "phonebook.db", "quick_dial": {9: "112"}},
         "bluetooth": {"enabled": False},
-        "sip": {"enabled": False},
     }
 
 
@@ -141,11 +139,8 @@ class Harness:
     async def __aenter__(self):
         tel = self.tel
         if tel.bt:
-            tel.bt.on_incoming_call = tel._on_incoming_call_bt
+            tel.bt.on_incoming_call = tel._on_incoming_call
             tel.bt.on_call_ended = tel._on_call_ended
-        if tel.sip:
-            tel.sip.on_incoming_call = tel._on_incoming_call_sip
-            tel.sip.on_call_ended = tel._on_call_ended
         self._tasks = [
             asyncio.create_task(tel._hook_loop()),
             asyncio.create_task(tel._dial_loop()),

@@ -1,6 +1,6 @@
 # 📞 Vintage Tel BL
 
-> Trasforma un telefono SIP Siemens grigio anni '70 in un **vivavoce Bluetooth** (con VoIP SIP opzionale), mantenendo cornetta, disco combinatore e campanello elettromeccanico originali.
+> Trasforma un telefono SIP Siemens grigio anni '70 in un **vivavoce Bluetooth (HFP)** per il cellulare, mantenendo cornetta, disco combinatore e campanello elettromeccanico originali.
 
 ![status](https://img.shields.io/badge/status-WIP-orange)
 ![hardware](https://img.shields.io/badge/hardware-RPi%20Zero%202W-red)
@@ -14,7 +14,6 @@ Un retrofit hardware/software che porta un telefono SIP italiano degli anni '70 
 - 📱 **Vivavoce Bluetooth (HFP)** per il cellulare — è il cellulare a telefonare, il vecchio apparecchio è l'interfaccia fisica
 - ☎️ **Disco combinatore funzionante** — giri il disco, parte la chiamata
 - 🔔 **Campanello elettromeccanico originale** che squilla davvero
-- 🌐 **VoIP SIP opzionale** — può funzionare anche come telefono IP autonomo via Wi-Fi
 - 📓 **Rubrica** con display OLED nascosto (opzionale)
 - 🔋 **Alimentazione a batteria** (2×18650) con ricarica USB-C
 
@@ -31,8 +30,6 @@ Il Raspberry Pi fa da **vivavoce HFP** accoppiato al tuo cellulare (via oFono): 
 | Parla/ascolta | audio bidirezionale via Bluetooth SCO (HFP) | oFono / I2S |
 | Riaggancia | cornetta giù → `Hangup` HFP | `hook_switch` → `bt_phone` |
 
-**Modalità operative** (`mode` in `config.yaml`): `bt_only` · `sip_only` · `hybrid` (BT se connesso, altrimenti SIP).
-
 ## 📚 Documentazione
 
 Guida completa nella cartella [`docs/`](docs/) (italiano, numerata in sequenza di build):
@@ -43,7 +40,7 @@ Guida completa nella cartella [`docs/`](docs/) (italiano, numerata in sequenza d
 | 02 | [Bill of Materials](docs/02_bom.md) | Componenti, prezzi indicativi, fornitori, strumenti |
 | 03 | [Schema di cablaggio](docs/03_wiring.md) | Pinout, disco, gancio, audio, campanello, alimentazione |
 | 04 | [Guida installazione hardware](docs/04_installation.md) | Montaggio passo-passo (Step 1–11) |
-| 05 | [Setup software](docs/05_software_setup.md) | OS, pacchetti, overlay I2S, oFono, build PJSIP |
+| 05 | [Setup software](docs/05_software_setup.md) | OS, pacchetti, overlay I2S, oFono/BlueZ HFP |
 | 06 | [Troubleshooting](docs/06_troubleshooting.md) | Problemi comuni e soluzioni |
 | 07 | [Mappa di conversione cassetta](docs/07_retrofit_layout.md) | Cosa togliere/tenere/aggiungere + ordine operazioni |
 
@@ -101,11 +98,10 @@ L'installer prepara dipendenze, overlay I2S, oFono/BlueZ, copia `asound.conf` e 
 
 ## ⚙️ Configurazione
 
-`config.yaml` (creato da [`firmware/config/config.example.yaml`](firmware/config/config.example.yaml)) — **non committarlo**, contiene credenziali SIP e MAC del cellulare. Chiavi principali:
+`config.yaml` (creato da [`firmware/config/config.example.yaml`](firmware/config/config.example.yaml)) — **non committarlo**, contiene il MAC del cellulare. Chiavi principali:
 
 | Sezione | Chiave | Significato |
 |---------|--------|-------------|
-| — | `mode` | `bt_only` / `sip_only` / `hybrid` |
 | `bluetooth` | `device_name`, `auto_reconnect_mac` | Nome BT mostrato e MAC del cellulare |
 | `dial` | `zero_pulses` | 10 impulsi = `0` (convenzione IT) |
 | `dial` | `digit_timeout_s` | Fallback fine-cifra se il rilascio NSI si perde (`0` = off) |
@@ -150,7 +146,7 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m pytest
 ```
 
-Copre state machine, lettore disco, selezione backend, rubrica e config audio. I driver GPIO/DBus/PJSIP si validano sul Pi con `src/test_hardware.py`.
+Copre state machine, lettore disco, rubrica e config audio. I driver GPIO/DBus si validano sul Pi con `src/test_hardware.py`.
 
 ## 🧯 Troubleshooting
 
@@ -172,7 +168,7 @@ vintage_tel_bl/
 │   └── requirements-dev.txt     ← dipendenze test
 └── assets/
     ├── architecture.md          ← diagramma architettura
-    ├── diagrams/                ← 8 diagrammi SVG di montaggio
+    ├── diagrams/                ← 9 diagrammi SVG di montaggio
     └── retrofit/                ← foto S62 + cassetta annotata (mappa conversione)
 ```
 

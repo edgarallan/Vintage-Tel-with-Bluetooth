@@ -18,7 +18,6 @@ from .dial_reader import DialReader
 from .hook_switch import HookSwitch
 from .bell_driver import BellDriver
 from .bt_phone import BluetoothPhone
-from .sip_client import SipClient
 from .display import Display
 from .phonebook import Phonebook
 from .audio import AudioManager
@@ -48,7 +47,6 @@ class VintageTel:
         self.state = State.IDLE
         self._state_lock = asyncio.Lock()
         self._dialed_digits = ""
-        self._call_backend = None  # "bt" o "sip"
 
         # Inizializza i moduli
         self.hook = HookSwitch(config["hook"])
@@ -59,16 +57,15 @@ class VintageTel:
         self.audio = AudioManager(config["audio"])
         self.phonebook = Phonebook(config["phonebook"])
 
-        # Backend chiamate
+        # Backend chiamate: vivavoce Bluetooth HFP (unico backend)
         self.bt = BluetoothPhone(config["bluetooth"]) if config["bluetooth"]["enabled"] else None
-        self.sip = SipClient(config["sip"]) if config["sip"]["enabled"] else None
 
         self._tasks: list[asyncio.Task] = []
         self._shutdown = asyncio.Event()
 
     async def start(self):
         """Avvia tutti i moduli e i loop di evento."""
-        self.log.info("🟢 Vintage Tel BL — avvio in modalità %s", self.config["mode"])
+        self.log.info("🟢 Vintage Tel BL — avvio (vivavoce Bluetooth HFP)")
 
         # Avvia moduli
         await self.hook.start()
@@ -82,15 +79,11 @@ class VintageTel:
             await self.led.start()
             await self.led.idle()
 
-        # Backend
+        # Backend Bluetooth HFP
         if self.bt:
             await self.bt.start()
-            self.bt.on_incoming_call = self._on_incoming_call_bt
+            self.bt.on_incoming_call = self._on_incoming_call
             self.bt.on_call_ended = self._on_call_ended
-        if self.sip:
-            await self.sip.start()
-            self.sip.on_incoming_call = self._on_incoming_call_sip
-            self.sip.on_call_ended = self._on_call_ended
 
         # Loop principali (coroutine in parallelo)
         self._tasks.append(asyncio.create_task(self._hook_loop()))
@@ -117,7 +110,6 @@ class VintageTel:
         if self.display: await self.display.stop()
         if self.led: await self.led.stop()
         if self.bt: await self.bt.stop()
-        if self.sip: await self.sip.stop()
 
         self.log.info("Spegnimento completato")
 
@@ -219,19 +211,14 @@ class VintageTel:
     # ─── Call management ──────────────────────────────────────────────
 
     async def _place_call(self, number: str):
-        """Avvia una chiamata in uscita scegliendo backend in base alla mode."""
+        """Avvia una chiamata in uscita via Bluetooth HFP."""
         await self._transition(State.CALLING)
         self.log.info("📞 Chiamo: %s", number)
 
-        backend = self._choose_backend()
-        self._call_backend = backend
-
-        if backend == "bt":
+        if self.bt and self.bt.connected:
             ok = await self.bt.place_call(number)
-        elif backend == "sip":
-            ok = await self.sip.place_call(number)
         else:
-            self.log.error("Nessun backend disponibile!")
+            self.log.error("Bluetooth non connesso — impossibile chiamare")
             ok = False
 
         if not ok:
@@ -245,69 +232,37 @@ class VintageTel:
 
     async def _answer_call(self):
         """Risponde alla chiamata in arrivo."""
-        if self._call_backend == "bt":
+        if self.bt:
             await self.bt.answer()
-        elif self._call_backend == "sip":
-            await self.sip.answer()
         await self._transition(State.IN_CALL)
 
     async def _reject_call(self):
-        if self._call_backend == "bt":
+        if self.bt:
             await self.bt.reject()
-        elif self._call_backend == "sip":
-            await self.sip.reject()
-        self._call_backend = None
         await self._transition(State.IDLE)
 
     async def _hangup(self):
-        if self._call_backend == "bt":
+        if self.bt:
             await self.bt.hangup()
-        elif self._call_backend == "sip":
-            await self.sip.hangup()
-        self._call_backend = None
         self._dialed_digits = ""
         await self._transition(State.IDLE)
 
     async def _send_dtmf(self, digit: int):
         """Invia un tono DTMF durante chiamata (per IVR)."""
-        if self._call_backend == "bt":
+        if self.bt:
             await self.bt.send_dtmf(str(digit))
-        elif self._call_backend == "sip":
-            await self.sip.send_dtmf(str(digit))
 
-    # ─── Backend selection ────────────────────────────────────────────
+    # ─── Incoming call ────────────────────────────────────────────────
 
-    def _choose_backend(self) -> str | None:
-        mode = self.config["mode"]
-        if mode == "bt_only":
-            return "bt" if self.bt and self.bt.connected else None
-        if mode == "sip_only":
-            return "sip" if self.sip and self.sip.registered else None
-        # hybrid: BT se disponibile, altrimenti SIP
-        if self.bt and self.bt.connected:
-            return "bt"
-        if self.sip and self.sip.registered:
-            return "sip"
-        return None
-
-    # ─── Incoming call callbacks ──────────────────────────────────────
-
-    async def _on_incoming_call_bt(self, caller: str):
-        await self._on_incoming_call("bt", caller)
-
-    async def _on_incoming_call_sip(self, caller: str):
-        await self._on_incoming_call("sip", caller)
-
-    async def _on_incoming_call(self, backend: str, caller: str):
+    async def _on_incoming_call(self, caller: str):
         if self.state != State.IDLE:
             self.log.warning("Chiamata in arrivo ma non in IDLE — ignoro")
             return
 
         # Risolvi numero → nome se in rubrica
         name = self.phonebook.lookup(caller) or caller
-        self.log.info("📲 Chiamata in arrivo da: %s (%s)", name, backend)
+        self.log.info("📲 Chiamata in arrivo da: %s", name)
 
-        self._call_backend = backend
         if self.display:
             await self.display.show_incoming(name, caller)
 
@@ -317,7 +272,6 @@ class VintageTel:
     async def _on_call_ended(self):
         self.log.info("Chiamata terminata dal remoto")
         await self.bell.stop_ringing()
-        self._call_backend = None
         self._dialed_digits = ""
         await self._transition(State.IDLE)
 

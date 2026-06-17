@@ -122,7 +122,7 @@ journalctl -u vintage-tel -n 100 --no-pager
 Cerca traceback Python. I problemi più comuni:
 - Permessi GPIO → assicurati che l'utente del servizio sia in gruppo `gpio` e `i2c`
 - Permessi audio → gruppo `audio`
-- PJSIP non trovato → reinstalla in venv
+- oFono/BlueZ non attivi → `systemctl status ofono bluetooth`
 
 ### Sintomo: batteria si scarica troppo in fretta
 1. Wi-Fi power management ON: `sudo iwconfig wlan0 power on`

@@ -1,5 +1,5 @@
 [Unit]
-Description=Vintage Tel BL — telefono SIP vintage con Bluetooth e VoIP
+Description=Vintage Tel BL — telefono vintage come vivavoce Bluetooth HFP
 After=network-online.target bluetooth.service ofono.service sound.target
 Wants=network-online.target bluetooth.service ofono.service
 
