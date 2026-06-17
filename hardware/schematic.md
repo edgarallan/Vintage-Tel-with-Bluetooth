@@ -59,11 +59,11 @@
     │  GPIO 7  ────[330Ω]──► LED B       │
     │  (common cathode to GND)           │
     │                                    │
-    │  I2C bus (GPIO 2,3) ── OLED + WM8960│
+    │  I2C bus (GPIO 2,3) ── Display OLED│
     │                                    │
     │  I2S bus (GPIO 18,19,20,21):       │
-    │   ├─ Codec WM8960 → SPEAKER cornetta (ampli integrato)
-    │   └─ Codec WM8960 ← MIC elettrete (preamp+ADC integrati)
+    │   ├─ MAX98357A → SPEAKER cornetta (ampli I2S)
+    │   └─ SPH0645 (mic MEMS I2S) → MIC cornetta
     │                                    │
     └────────────────────────────────────┘
             ▲
@@ -89,18 +89,18 @@
 ### Bus I2C (display)
 | Segnale | Pin Pi (BCM) | Verso |
 |---------|--------------|-------|
-| SDA | GPIO 2 | Display OLED (0x3c) + WM8960 (0x1a) |
-| SCL | GPIO 3 | Display OLED (0x3c) + WM8960 (0x1a) |
+| SDA | GPIO 2 | Display OLED SDA |
+| SCL | GPIO 3 | Display OLED SCL |
 | 3V3 | pin 1 | Display VCC |
 | GND | pin 9 | Display GND |
 
 ### Bus I2S (audio)
 | Segnale | Pin Pi (BCM) | Verso |
 |---------|--------------|-------|
-| BCK | GPIO 18 | WM8960 BCLK |
-| LRCK | GPIO 19 | WM8960 LRCLK |
-| DOUT | GPIO 21 | WM8960 DACDAT (Pi → speaker) |
-| DIN | GPIO 20 | WM8960 ADCDAT (mic elettrete → Pi) |
+| BCK | GPIO 18 | MAX98357A BCLK + SPH0645 BCLK |
+| LRCK | GPIO 19 | MAX98357A LRC + SPH0645 WS |
+| DOUT | GPIO 21 | MAX98357A DIN (Pi → speaker) |
+| DIN | GPIO 20 | SPH0645 DOUT (mic → Pi) |
 
 ### GPIO digitali
 | Segnale | Pin Pi (BCM) | Direzione | Verso |

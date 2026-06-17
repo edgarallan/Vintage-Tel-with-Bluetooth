@@ -28,22 +28,22 @@
 
 ## Audio problemi
 
-### Sintomo: scheda audio WM8960 non rilevata
-1. `aplay -l` non mostra `wm8960soundcard` → driver Seeed non installato/caricato: rilancia `sudo ./scripts/install.sh --module wm8960-soundcard` dal repo `seeed-linux-dtoverlays` e riavvia
-2. `i2cdetect -y 1` deve mostrare `1a` (codec) e `3c` (OLED); se manca `1a`, controlla i jumper SDA/SCL e l'alimentazione del WM8960
-3. Verifica che `dtparam=i2s=on` e `dtparam=i2c_arm=on` siano in `config.txt`
+### Sintomo: scheda audio non rilevata
+1. `aplay -l` non mostra `sndrpigooglevoi` → manca l'overlay: verifica `dtoverlay=googlevoicehat-soundcard` in `config.txt` e riavvia. Se il nome card differisce, usa quello reale in `asound.conf`.
+2. Verifica che `dtparam=i2s=on` sia in `config.txt`
+3. `i2cdetect -y 1` deve mostrare `3c` (display OLED); l'audio NON usa I2C
 
 ### Sintomo: speaker non emette suono
-1. `aplay -l` deve elencare la scheda `wm8960soundcard` (se manca: overlay/driver WM8960 non caricato)
-2. Verifica volume: `alsamixer -c wm8960soundcard` → alza "Speaker" e i canali di uscita
-3. Verifica cablaggio I2S: BCK, LRCK, DACDAT su pin 12, 35, 40
-4. Verifica alimentazione 5V del modulo WM8960 (misurare con multimetro)
+1. `aplay -l` deve elencare la scheda `sndrpigooglevoi`
+2. Verifica volume softvol: `alsamixer -c sndrpigooglevoi` (o alza `speaker_gain_db`)
+3. Verifica cablaggio I2S del MAX98357A: BCK, LRC, DIN su pin 12, 35, 40
+4. Verifica alimentazione 5V del MAX98357A; lo speaker è sul morsetto a vite (+/−)
 
 ### Sintomo: microfono troppo basso o nessun audio in entrata
-1. In `alsamixer -c wm8960soundcard`: abilita **Capture**, alza "Mic"/"Capture" e attiva l'eventuale boost
-2. Verifica che l'elettrete sia su `MIC+ / MIC−` (con bias del codec) e con la polarità corretta
-3. Aumenta `mic_gain_db` in config.yaml fino a 20-30 dB (softvol `PhoneCaptureVol`)
-4. Test diretto: `arecord -D plughw:CARD=wm8960soundcard -f S16_LE -r 16000 -d 5 test.wav && aplay test.wav`
+1. Verifica il cablaggio SPH0645: BCK (pin 12), WS (pin 35), DOUT → GPIO20 (pin 38), `SEL` a GND
+2. Alza `mic_gain_db` in config.yaml fino a 20-30 dB (softvol `PhoneCaptureVol`)
+3. Il mic è mono sul canale sinistro (`SEL`=GND): registra con `-c 1`
+4. Test diretto: `arecord -D plughw:CARD=sndrpigooglevoi -f S16_LE -r 16000 -c 1 -d 5 test.wav && aplay test.wav`
 
 ### Sintomo: eco o microfono che si sente sullo speaker
 1. Abilita echo cancellation in PulseAudio:

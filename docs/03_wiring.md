@@ -45,8 +45,8 @@
 | LED_B | GPIO 7 | 26 | OUT (PWM) | LED stato — blu |
 | I2S BCK | GPIO 18 | 12 | OUT | Bit clock audio |
 | I2S LRCK | GPIO 19 | 35 | OUT | LR clock audio |
-| I2S DIN | GPIO 20 | 38 | IN | Audio dal codec WM8960 (mic elettrete) |
-| I2S DOUT | GPIO 21 | 40 | OUT | Audio verso codec WM8960 (speaker) |
+| I2S DIN | GPIO 20 | 38 | IN | Dal mic SPH0645 (DOUT del mic) |
+| I2S DOUT | GPIO 21 | 40 | OUT | All'ampli MAX98357A (DIN dell'ampli) |
 
 ## Cablaggio del disco combinatore
 
@@ -126,68 +126,45 @@ GPIO 27 = LOW → cornetta sollevata (handset up)
 GPIO 27 = HIGH → cornetta poggiata (handset down)
 ```
 
-## Cablaggio audio (codec WM8960 + mic elettrete)
+## Cablaggio audio (MAX98357A + SPH0645)
 
-Un **unico codec I2S WM8960** gestisce sia l'uscita (speaker cornetta, con ampli
-integrato) sia l'ingresso (mic elettrete, con bias + preamp + ADC integrati).
-L'I2S è quindi **bidirezionale** verso una sola scheda.
+Audio I2S **full-duplex** con due breakout che condividono i clock I2S:
+**MAX98357A** (uscita, sul DOUT del Pi) e **SPH0645** (ingresso, sul DIN del Pi).
+Collegamento **a jumper** sugli header — solo saldature through-hole, niente SMD.
+
+### Uscita — MAX98357A → speaker cornetta
 
 ```
-                         ┌──────────────────────────┐
-Pi GPIO 18 (BCK) ───────►│ BCLK                     │
-Pi GPIO 19 (LRCK)───────►│ LRCLK / DACLRC / ADCLRC  │
-Pi GPIO 21 (DOUT)───────►│ DACDAT   ─► SPK+ / SPK− ──┼─► Speaker cornetta (8Ω)
-Pi GPIO 20 (DIN) ◄───────│ ADCDAT   ◄─ MIC+ / MIC− ◄─┼── Capsula elettrete
-Pi 5V  ─────────────────►│ VDD (5V)                 │
-Pi 3V3 ─────────────────►│ AVDD/DBVDD (3V3 se richiesto)
-Pi GND ─────────────────►│ GND                      │
-                         │   WM8960 (codec I2S)     │
-                         └──────────────────────────┘
+Pi GPIO 18 (BCK) ───► BCLK   ┐
+Pi GPIO 19 (LRCK)───► LRC    │ MAX98357A ─► [+ −] morsetto a vite ─► Speaker cornetta
+Pi GPIO 21 (DOUT)───► DIN    ┘
+Pi 5V  ─────────────► Vin
+Pi GND ─────────────► GND
+                       GAIN ── libero = +9 dB (collegalo a GND/Vin per altri livelli)
 ```
+
+### Ingresso — SPH0645 (mic MEMS) nella cornetta
+
+```
+Pi GPIO 18 (BCK) ───► BCLK
+Pi GPIO 19 (LRCK)───► LRCL / WS
+Pi GPIO 20 (DIN) ◄─── DOUT     (dati mic verso il Pi)
+Pi 3V3 ─────────────► 3V
+Pi GND ─────────────► GND
+                       SEL ── a GND (canale sinistro)
+```
+
+Il breakout SPH0645 è piccolo: va montato **nella cornetta**, al posto della vecchia
+capsula a carbone (che si rimuove), con cavetto schermato verso il Pi.
 
 Note:
-- Alcuni moduli WM8960 hanno un jack/header mic con **bias già fornito**: collega
-  l'elettrete a `MIC+ / MIC−` (o `MIC1`), il bias lo dà il codec — niente resistore
-  o op-amp esterni.
-- Il **volume** di speaker e mic si regola da ALSA (`alsamixer -c wm8960soundcard`)
-  e dai softvol `PhoneSoftVol` / `PhoneCaptureVol` in [`asound.conf`](../firmware/config/asound.conf),
-  pilotati da `audio.speaker_gain_db` / `audio.mic_gain_db`.
-- **Controllo codec via I2C**: il WM8960 si configura via I2C (GPIO 2 SDA / GPIO 3
-  SCL, indirizzo `0x1a`) sullo **stesso bus del display OLED** (0x3C) — convivono
-  senza conflitti. Verifica con `i2cdetect -y 1` (devono comparire `1a` e `3c`).
-
-### Collegamento della HAT Seeed WM8960
-
-> **Non impilare** la HAT sull'intero header a 40 pin: coprirebbe i GPIO di disco,
-> gancio, campanello, LED e pulsante. Collega **a jumper** solo i pin necessari:
-
-```
-WM8960 (Seeed)        Raspberry Pi
-  BCLK      ───────►  GPIO 18  (pin 12)
-  LRCLK     ───────►  GPIO 19  (pin 35)
-  DACDAT    ───────►  GPIO 21  (pin 40)   (Pi → speaker)
-  ADCDAT    ◄───────  GPIO 20  (pin 38)   (mic → Pi)
-  SDA (I2C) ───────►  GPIO 2   (pin 3)
-  SCL (I2C) ───────►  GPIO 3   (pin 5)
-  5V / 3V3 / GND ──►  alimentazione
-```
-
-Sul lato scheda: l'**elettrete** va all'ingresso mic della HAT (`MIC` / `MIC+ MIC−`),
-lo **speaker** della cornetta alle uscite altoparlante (`SPK+ / SPK−`).
-
-### Montaggio dell'elettrete in cornetta
-
-```
-Capsula elettrete 9.7 mm  →  stessa sede della vecchia capsula a carbone
-   ├─ terminale "+"  ── MIC+ del WM8960
-   └─ terminale "−"  ── MIC− / GND del WM8960
-```
-La capsula elettrete entra nella sede meccanica Siemens praticamente identica.
-Conserva la capsula a carbone originale per un eventuale ripristino.
-
-> *Alternativa senza WM8960*: DAC PCM5102A (out) + ampli PAM8302 + mic MEMS
-> digitale INMP441 (in) come tre moduli separati sull'I2S. Più componenti; il
-> WM8960 è la via consigliata con l'elettrete.
+- I due moduli **condividono BCLK (GPIO 18) e LRCK (GPIO 19)**; le linee dati sono
+  separate (DOUT del Pi → ampli, DIN del Pi ← mic). Overlay: `googlevoicehat-soundcard`.
+- Usano **solo l'I2S**: l'I2C (GPIO 2/3) resta dedicato al display OLED.
+- Né MAX98357A né SPH0645 hanno regolazione hardware del volume: il livello si
+  imposta dai softvol `PhoneSoftVol` / `PhoneCaptureVol` in
+  [`asound.conf`](../firmware/config/asound.conf), pilotati da
+  `audio.speaker_gain_db` / `audio.mic_gain_db`.
 
 ## Cablaggio campanello
 

@@ -28,15 +28,15 @@
 
 | Funzione | Nome BCM | Pin fisico | Tipo |
 |---|---|---|---|
-| I2C SDA (OLED 0x3c + WM8960 0x1a) | GPIO 2 | 3 | I2C |
-| I2C SCL (OLED 0x3c + WM8960 0x1a) | GPIO 3 | 5 | I2C |
+| Display I2C SDA | GPIO 2 | 3 | I2C |
+| Display I2C SCL | GPIO 3 | 5 | I2C |
 | Disco - impulsi | GPIO 4 | 7 | Input, pull-up |
 | Disco - NSI | GPIO 17 | 11 | Input, pull-up |
 | Hook switch | GPIO 27 | 13 | Input, pull-up |
 | Audio I2S BCK | GPIO 18 | 12 | I2S |
 | Audio I2S LRCK | GPIO 19 | 35 | I2S |
-| Audio I2S DIN | GPIO 20 | 38 | I2S in (WM8960, mic elettrete) |
-| Audio I2S DOUT | GPIO 21 | 40 | I2S out (WM8960, speaker) |
+| Audio I2S DIN | GPIO 20 | 38 | I2S in (mic SPH0645) |
+| Audio I2S DOUT | GPIO 21 | 40 | I2S out (ampli MAX98357A) |
 | Campanello EN | GPIO 22 | 15 | Output |
 | Campanello fase | GPIO 23 | 16 | Output PWM |
 | Bottone rubrica | GPIO 24 | 18 | Input, pull-up |

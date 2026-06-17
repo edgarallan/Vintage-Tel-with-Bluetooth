@@ -33,8 +33,8 @@ Materiale di riferimento:
 | 4 | **Morsettiera** linea/cornetta | basso-centro | Riusala come **nodo di cablaggio** interno (GND, 5V/3V3, segnali). | — |
 
 Note:
-- L'**altoparlante** della cornetta (capsula `M/R`, 50–200 Ω) si tiene e si pilota dal codec WM8960 (vedi #8).
-- La **capsula microfonica a carbone** (`M`) si sostituisce con un **elettrete 9.7 mm** (vedi #10).
+- L'**altoparlante** della cornetta (capsula `M/R`, 50–200 Ω) si tiene e si pilota dall'ampli MAX98357A (vedi #8).
+- La **capsula microfonica a carbone** (`M`) si **rimuove** e si sostituisce col mic MEMS I2S **SPH0645** (vedi #10).
 
 ## 2. Cosa RIMUOVERE
 
@@ -51,9 +51,9 @@ lì che va il Raspberry Pi.
 | # | Componente | Posizione consigliata |
 |---|-----------|-----------------------|
 | 7 | **Raspberry Pi Zero 2 W** | Spazio centrale liberato da 2+3 (zona più piatta e ampia). |
-| 8 | **Codec audio I2S WM8960** (Seeed; DAC + ampli + ADC mic) | Vicino ai morsetti dell'auricolare; collegato al Pi **a jumper** (I2S + I2C + alim.), non impilato. |
+| 8 | **Ampli I2S MAX98357A** | Vicino ai morsetti dell'auricolare; speaker su morsetto a vite, I2S a jumper. |
 | 9 | **Boost (XL6009) + H-bridge (L9110S)** per il campanello | Vicino alla bobina del campanello (basso), cavi corti. |
-| 10 | **Microfono elettrete 9.7 mm** | **Nella cornetta**, al posto della capsula a carbone; collegato al WM8960 (#8). |
+| 10 | **Mic MEMS I2S SPH0645** | **Nella cornetta**, al posto della capsula a carbone (rimossa); a jumper sull'I2S. |
 
 Alimentazione (vedi [`schematic.md`](schematic.md)): batteria 2×18650 → TP4056 →
 MT3608 (5V logica) e XL6009 (alta tensione campanello, attiva solo allo squillo).

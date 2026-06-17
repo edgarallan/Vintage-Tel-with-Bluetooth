@@ -14,19 +14,15 @@ Prezzi indicativi 2026 in EUR, IVA inclusa. Acquisto consigliato: Mouser/RS/Digi
 
 | # | Componente | Quantità | Prezzo (€) | Note |
 |---|-----------|----------|-----------|------|
-| 4 | Codec audio I2S **WM8960 (Seeed Studio)** | 1 | 10 | DAC + ampli speaker **+ preamp/ADC mic**; driver Seeed, collegare a jumper (non impilare la HAT) |
-| 5 | Capsula **elettrete 9.7 mm** | 1 | 2 | Microfono cornetta (sostituisce il mic a carbone) |
-| 6 | *(alternativa)* PCM5102A + PAM8302 + INMP441 | — | ~17 | Solo se **non** usi il WM8960: 3 moduli separati (DAC + ampli + mic MEMS digitale) |
+| 4 | Ampli I2S **MAX98357A** (breakout, es. Adafruit 3006) | 1 | 6 | Uscita speaker cornetta; speaker su **morsetto a vite** |
+| 5 | Mic MEMS I2S **SPH0645** (breakout, es. Adafruit 3421) | 1 | 7 | Microfono, montato **nella cornetta** |
 
-**Microfono — scelta: elettrete moderno.** Un elettrete è **analogico**, e il Pi non ha
-ingresso analogico: serve un codec che faccia bias + preamp + ADC. Il **WM8960** copre
-tutto (e in più amplifica l'altoparlante), quindi una sola scheda sostituisce DAC +
-ampli + ADC mic. La capsula elettrete 9.7 mm entra nella stessa sede meccanica della
-vecchia capsula a carbone Siemens.
+**Audio — due breakout I2S (minima saldatura).** Mic e speaker sono due moduli I2S
+separati, collegati **a jumper** (solo saldature through-hole degli header, niente SMD):
 
-- ✅ **Elettrete + WM8960** (scelto): semplice, qualità migliore, un solo modulo audio.
-- *Carbone originale*: suono "vintage" ma richiede bias DC + AC coupling + preamp op-amp prima del codec — più complesso.
-- *INMP441 (MEMS digitale)*: si collega diretto all'I2S ma non è un elettrete; richiede comunque un DAC/ampli separati per l'uscita.
+- **MAX98357A** — ampli Class-D: lo speaker della cornetta (50-200 Ω) va sul morsetto a vite. Pin `GAIN` lasciato libero = +9 dB (regolabile).
+- **SPH0645** — microfono MEMS digitale, piccolo: montato nella cornetta al posto della capsula a carbone (pin `SEL` → GND = canale sinistro).
+- Usano **solo l'I2S** (GPIO 18/19/20/21), full-duplex con overlay mainline `googlevoicehat-soundcard` (card `sndrpigooglevoi`); nessun codec/I2C audio, l'I2C resta libero per il display.
 
 ## Alimentazione
 

@@ -52,44 +52,31 @@ Aggiungi in fondo:
 # Disabilita audio integrato (non c'è jack sul Pi Zero)
 dtparam=audio=off
 
-# Abilita I2S e I2C (I2C serve sia al display sia al controllo del codec WM8960)
+# Abilita I2S (audio) e I2C (display OLED)
 dtparam=i2s=on
 dtparam=i2c_arm=on
+
+# Audio full-duplex I2S: ampli MAX98357A (out) + mic MEMS SPH0645 (in).
+# Overlay MAINLINE (già incluso in Raspberry Pi OS), nessun driver da compilare.
+dtoverlay=googlevoicehat-soundcard
 
 # Wi-Fi power management off (chiamate stabili)
 # Aggiungere riga in /etc/rc.local: iwconfig wlan0 power off
 ```
 
-> L'overlay del codec **non** va aggiunto a mano: lo installa lo script Seeed
-> (sezione seguente), che scrive da sé la riga `dtoverlay=...` corretta.
-
-## Driver codec WM8960 (Seeed Studio)
-
-La scheda **Seeed Studio WM8960** usa un driver fuori dal kernel base. Installalo
-dal repo ufficiale Seeed:
+Dopo il riavvio, **verifica** la scheda ALSA:
 
 ```bash
-cd ~
-git clone https://github.com/Seeed-Studio/seeed-linux-dtoverlays
-cd seeed-linux-dtoverlays
-sudo ./scripts/install.sh --module wm8960-soundcard
-sudo reboot
+aplay -l        # atteso: card X: sndrpigooglevoi
+arecord -l      # stessa card per il mic (full-duplex)
 ```
 
-Dopo il riavvio, **verifica** il nome reale della scheda ALSA:
+Se il nome differisce da `sndrpigooglevoi`, aggiorna `firmware/config/asound.conf`
+(campi `card` e `hw:CARD=...`).
 
-```bash
-aplay -l        # cerca una card 'wm8960soundcard'
-arecord -l
-```
-
-Se il nome differisce da `wm8960soundcard`, aggiorna di conseguenza
-`firmware/config/asound.conf` (campi `card` e `hw:CARD=...`).
-
-> **Collegamento (importante):** non impilare la HAT sull'intero header a 40 pin —
-> coprirebbe i GPIO usati da disco, gancio, campanello, LED e pulsante. Collega il
-> WM8960 **a jumper** solo su: I2S (GPIO 18/19/20/21), I2C di controllo
-> (GPIO 2/3, indirizzo `0x1a`), 5V, 3V3 e GND. Vedi [03_wiring.md](03_wiring.md).
+> **Collegamento:** i due breakout si collegano **a jumper** sui soli pin I2S
+> (GPIO 18/19/20/21) + alimentazione. L'I2C (GPIO 2/3) resta per il solo display.
+> Schema in [03_wiring.md](03_wiring.md).
 
 ## Configurazione PJSIP (VoIP SIP)
 
@@ -182,15 +169,15 @@ sudo cp config/asound.conf /etc/asound.conf
 
 Test audio:
 ```bash
-# Test playback (speaker cornetta via WM8960)
-speaker-test -D plughw:CARD=wm8960soundcard -t sine -f 440 -c 1
+# Test playback (speaker cornetta via MAX98357A)
+speaker-test -D plughw:CARD=sndrpigooglevoi -t sine -f 440 -c 1
 
-# Test recording (mic elettrete via WM8960)
-arecord -D plughw:CARD=wm8960soundcard -f S16_LE -r 16000 -c 1 -d 5 test.wav
-aplay -D plughw:CARD=wm8960soundcard test.wav
+# Test recording (mic SPH0645 nella cornetta)
+arecord -D plughw:CARD=sndrpigooglevoi -f S16_LE -r 16000 -c 1 -d 5 test.wav
+aplay -D plughw:CARD=sndrpigooglevoi test.wav
 
-# Livelli mic/speaker del codec WM8960
-alsamixer -c wm8960soundcard   # abilita "Capture", alza "Mic" e "Speaker"
+# Livelli (i softvol di asound.conf li gestisce anche audio.py via mic/speaker_gain_db)
+alsamixer -c sndrpigooglevoi
 ```
 
 ## Configurazione `config.yaml`

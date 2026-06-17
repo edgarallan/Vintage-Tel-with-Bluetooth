@@ -45,14 +45,12 @@ if ! grep -q "vintage-tel-bl" "$CONFIG_TXT"; then
 dtparam=audio=off
 dtparam=i2s=on
 dtparam=i2c_arm=on
-# NB: l'overlay del codec WM8960 lo aggiunge lo script driver di Seeed Studio
-# (vedi docs/05_software_setup.md), non va messo qui a mano.
+# Audio I2S full-duplex (MAX98357A + SPH0645), overlay mainline:
+dtoverlay=googlevoicehat-soundcard
 EOF
 fi
 
-echo "→ Codec audio: installa il driver Seeed WM8960 e riavvia:"
-echo "    git clone https://github.com/Seeed-Studio/seeed-linux-dtoverlays"
-echo "    cd seeed-linux-dtoverlays && sudo ./scripts/install.sh --module wm8960-soundcard"
+echo "→ Audio: riavvia, poi verifica la scheda con 'aplay -l' (attesa: sndrpigooglevoi)"
 
 echo "→ Aggiunta utente $PI_USER ai gruppi necessari…"
 usermod -aG gpio,i2c,spi,audio,bluetooth "$PI_USER"

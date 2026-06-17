@@ -66,7 +66,7 @@ Prima di rimontare con l'elettronica nuova, vale la pena:
 
 Salda su perfboard 7x9cm:
 1. Resistori pull-up + condensatori per disco e hook (vedi `03_wiring.md`)
-2. Codec audio **WM8960** (DAC speaker + ampli + ADC mic in un modulo)
+2. Breakout audio **MAX98357A** (ampli/speaker) e **SPH0645** (mic I2S)
 3. Connettori JST-XH per i cavi modulari verso il Pi e verso i componenti originali
 
 Crea **almeno 5 JST sul perfboard**:
@@ -114,23 +114,17 @@ Test funzionamento PRIMA di rimontare tutto:
 
 ![Connessioni audio](../assets/diagrams/07_audio_wiring.svg)
 
-> Nota: il diagramma mostra il layout a 3 moduli (DAC + ampli + mic MEMS). Con la
-> soluzione scelta **elettrete + WM8960** quei tre blocchi sono un'unica scheda.
+> Il diagramma illustra il principio (DAC/ampli I2S in uscita + mic I2S in
+> ingresso). I moduli attuali sono **MAX98357A** (uscita) e **SPH0645** (mic).
 
-### Soluzione scelta — Elettrete + codec WM8960
+Audio I2S full-duplex a due breakout: **MAX98357A** (ampli/speaker) e **SPH0645**
+(mic MEMS). Solo collegamenti a jumper, niente SMD.
 
-Il **WM8960** gestisce sia l'ingresso (mic elettrete) sia l'uscita (speaker), via I2S.
-
-1. Smonta la capsula a carbone (di solito si svita o si estrae) e **conservala** per un eventuale ripristino.
-2. Monta la **capsula elettrete 9.7 mm** nella stessa sede (adattatore stampato 3D se serve).
-3. Collega l'elettrete agli ingressi `MIC+ / MIC−` del WM8960 (bias fornito dal codec, niente preamp esterno).
-4. Collega lo speaker della cornetta alle uscite `SPK+ / SPK−` del WM8960 (ampli integrato).
-5. Collega il WM8960 al Pi **a jumper** (non impilare la HAT): I2S BCLK/LRCLK/DACDAT/ADCDAT + I2C SDA/SCL + 5V/3V3/GND — vedi [`03_wiring.md`](03_wiring.md). Così i GPIO di disco/gancio/campanello/LED restano liberi.
-6. Installa il driver Seeed WM8960 e verifica la scheda (`aplay -l`, `i2cdetect -y 1`) — vedi [`05_software_setup.md`](05_software_setup.md).
-
-**Speaker**: lo speaker originale (50-200Ω) si collega direttamente all'uscita del WM8960 — nessun adattamento.
-
-> *Alternativa senza WM8960*: mic a carbone originale (bias + preamp + ADC esterni) oppure mic MEMS digitale INMP441 + DAC/ampli separati. Più componenti.
+1. **Rimuovi** la capsula a carbone dalla cornetta (si svita o si estrae).
+2. Monta il breakout **SPH0645** nella sede del microfono della cornetta (adattatore stampato 3D se serve); porta i fili al Pi con cavetto schermato. `SEL` a GND.
+3. Monta il **MAX98357A** nella base; collega lo **speaker della cornetta** (50-200Ω) al suo **morsetto a vite** (+/−), nessun adattamento.
+4. Collega entrambi al Pi **a jumper** condividendo BCLK/LRCK: MAX98357A su DOUT (GPIO21), SPH0645 su DIN (GPIO20) — vedi [`03_wiring.md`](03_wiring.md). Usano solo l'I2S, i GPIO di disco/gancio/campanello/LED restano liberi.
+5. Abilita l'overlay `googlevoicehat-soundcard` e verifica la scheda con `aplay -l` (`sndrpigooglevoi`) — vedi [`05_software_setup.md`](05_software_setup.md).
 
 ## Step 9 — Display OLED (opzionale)
 
