@@ -177,33 +177,31 @@ Sintesi: il campanello richiede ~24V AC a 20-25Hz. Lo generiamo con:
 
 ## Alimentazione
 
+Modulo unico **DFRobot DFR0969**: portacelle 2×18650 + caricabatterie + protezione
++ uscita **5 V regolata** (niente boost separato sul rail logico).
+
 ```
-        USB-C (input ricarica)
+        USB-C / micro-USB (ricarica)
               │
               ▼
-        ┌──────────┐
-        │  TP4056  │  4.2V max charge
-        │  + DW01  │  + protezione
-        └─────┬────┘
-              │
-              ▼
-        ┌────────────┐
-        │  2x 18650  │  3.7V nom, 7000mAh totali
-        │  parallelo │
-        └─────┬──────┘
-              │
-              ├──────────────┐
+        ┌─────────────────────────────┐
+        │  DFRobot DFR0969            │  carica + protezione
+        │  2×18650 + charger + 5V/2A  │  (carica O scarica, no UPS)
+        └───────────┬─────────────────┘
+                    │ 5V regolati
+              ┌─────┴────────┐
               │              │
               ▼              ▼
-        ┌──────────┐   ┌──────────┐
-        │ MT3608   │   │ XL6009   │
-        │ 3.7→5V   │   │ 5→30V    │
-        └─────┬────┘   └─────┬────┘
-              │              │
-              ▼              ▼
-         Pi + moduli    Driver campanello
-         logic (5V)     (solo quando squilla)
+         Pi + moduli    ┌──────────┐
+         logic (5V)     │ XL6009   │  5→~30V
+                        └─────┬────┘
+                              ▼
+                        Driver campanello
+                        (solo quando squilla)
 ```
+
+> Budget uscita **2 A**: il Pi Zero 2 W + audio + display stanno larghi; tieni
+> margine per lo spunto del campanello (XL6009) se coincide con WiFi/BT attivi.
 
 **Stima autonomia**: 
 - In idle (BT advertising): ~50mA → ~140 ore (5+ giorni)

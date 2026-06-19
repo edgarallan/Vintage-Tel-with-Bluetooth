@@ -53,8 +53,8 @@ Il telefono SIP Siemens grigio degli anni '70 è un capolavoro di ingegneria ele
 │                      │                                          │
 │              ┌───────▼────────┐                                 │
 │              │  ALIMENTAZIONE │                                 │
-│              │  2x 18650 +    │                                 │
-│              │  TP4056 + boost│                                 │
+│              │  DFR0969       │                                 │
+│              │  (2x18650+5V)  │                                 │
 │              │  + 24VAC gen.  │                                 │
 │              └────────────────┘                                 │
 └─────────────────────────────────────────────────────────────────┘

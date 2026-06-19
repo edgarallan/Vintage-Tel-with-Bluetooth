@@ -3,7 +3,7 @@
 ```
                 Raspberry Pi Zero 2 W — Pinout 40 pin
                 
-        3V3  (1) ── (2)  5V     ◄── 5V from MT3608
+        3V3  (1) ── (2)  5V     ◄── 5V dal DFR0969
    SDA I2C  (3) ── (4)  5V
    SCL I2C  (5) ── (6)  GND
       DIAL  (7) ── (8)  TXD (debug serial)
