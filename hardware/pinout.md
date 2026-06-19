@@ -11,7 +11,7 @@
    DIAL_NSI (11)── (12) I2S BCK
                   
        PWM (13) ── (14) GND     HOOK_SW = GPIO 27 (BCM) = pin 13
-   BELL_EN (15)── (16) BELL_PH  GPIO 22, 23
+  BELL_IN1 (15)── (16) BELL_IN2  GPIO 22, 23 (DRV8871)
        3V3 (17)── (18) BTN_PB   GPIO 24 (button rubrica)
       MOSI (19)── (20) GND
       MISO (21)── (22) LED_R    GPIO 25
@@ -37,8 +37,8 @@
 | Audio I2S LRCK | GPIO 19 | 35 | I2S |
 | Audio I2S DIN | GPIO 20 | 38 | I2S in (mic SPH0645) |
 | Audio I2S DOUT | GPIO 21 | 40 | I2S out (ampli MAX98357A) |
-| Campanello EN | GPIO 22 | 15 | Output |
-| Campanello fase | GPIO 23 | 16 | Output PWM |
+| Campanello IN1 | GPIO 22 | 15 | Output (DRV8871 IN1) |
+| Campanello IN2 | GPIO 23 | 16 | Output (DRV8871 IN2) |
 | Bottone rubrica | GPIO 24 | 18 | Input, pull-up |
 | LED Rosso | GPIO 25 | 22 | Output PWM |
 | LED Verde | GPIO 8 | 24 | Output PWM |

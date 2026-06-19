@@ -24,61 +24,67 @@ Due bobine in serie attorno a un nucleo ferromagnetico. Quando ci passa corrente
                     AC ~24V @ 22Hz
 ```
 
-## Opzione A — H-bridge + Boost converter (consigliata, economica)
+## Opzione A — H-bridge DRV8871 + Boost (consigliata: semplice, poche saldature)
 
 ### Schema
 
 ```
-                                                                  ┌─────────┐
-                                                                  │ Bobine  │
-                                                                  │ campan. │
-   +5V                                                            │ (orig.) │
-    │                                                             └────┬────┘
-    │     ┌─────────┐         ┌──────────┐                             │
-    ├─────┤ XL6009  │── +30V ─┤  L9110S  │── OUT1 ─────────────────────┤
-    │     │ boost   │         │  H-bridge│                             │
-    │     │ DC-DC   │         │          │── OUT2 ─────────────────────┘
-    │     └─────────┘         │          │
-    │          │              │   IN1 ◄──┼──── GPIO 23 (BELL_PH)
-    │          │              │   IN2 ◄──┼──── GPIO 23 (inverted via NOT gate)
-    │     GPIO 22 (BELL_EN)   │          │
-    │     enable boost        └──────────┘
-    │
-   GND
+                                            ┌──────────────────────┐
+                                            │   DRV8871 (breakout)  │
+   +5V ──┬───────────┐                      │                      │   ┌─────────┐
+         │     ┌──────┴─────┐               │ VM  ◄── +24V         │   │ Bobine  │
+         │     │   Boost     │── +24V ──────►│ GND ◄── GND          │   │ campan. │
+         │     │ 5V→~24V     │               │ OUT1 ───[morsetto]───┼──►│ (orig.) │
+         │     │ (modulo)    │               │ OUT2 ───[morsetto]───┼──►│         │
+         │     └─────────────┘               │ IN1  ◄── GPIO 22     │   └─────────┘
+         │                                   │ IN2  ◄── GPIO 23     │
+        GND                                  └──────────────────────┘
 ```
+
+Bobina e alimentazione vanno sui **morsetti a vite** del breakout (niente
+saldatura). Solo i 3 pin logici (IN1, IN2, GND) richiedono un mini-header.
 
 ### Funzionamento
 
-1. **Pi alza GPIO 22 (BELL_EN)** → il boost converter XL6009 viene alimentato e genera ~30V DC. Quando GPIO 22 = 0, il boost si spegne (zero consumo).
-2. **Pi alterna GPIO 23 (BELL_PH)** a ~22Hz (44 transizioni al secondo):
-   - GPIO 23 HIGH → IN1=1, IN2=0 → corrente nella bobina in un senso
-   - GPIO 23 LOW  → IN1=0, IN2=1 → corrente nella bobina nel senso opposto
-3. L'H-bridge L9110S genera ai suoi capi (OUT1, OUT2) un'onda quadra di ±30V → applicata alle bobine fa oscillare il martelletto.
+Il software alterna **IN1/IN2** alla frequenza di squillo (~22 Hz):
+- IN1=1, IN2=0 → corrente nella bobina in un senso
+- IN1=0, IN2=1 → corrente nel senso opposto
+- IN1=IN2=0 → **coast**: uscite ad alta impedenza, nessuna corrente → silenzio
 
-**Trucco GPIO singolo**: per evitare di usare 2 GPIO, si può:
-- Mandare GPIO 23 sia a IN1 sia a IN2 tramite un piccolo inverter (74HC04 o transistor NPN) — un solo segnale logico controlla la fase
+Alternando si genera l'onda quadra AC (±24 V) che fa oscillare il martelletto.
+Il **DRV8871 regge fino a 45 V** (i 24-30 V del campanello sono ampiamente nei
+limiti) e ha **protezione interna** (sovracorrente, sovratemperatura, flyback):
+niente inverter, niente diodi/snubber esterni.
+
+> Il boost resta sempre alimentato dai 5 V; il silenzio si ottiene col coast
+> (IN1=IN2=0), non spegnendo il boost — una logica/GPIO in meno e un cablaggio
+> più semplice. Il consumo a riposo del boost è di pochi mA.
 
 ### Componenti
 
 | Componente | Specifica | Note |
 |-----------|-----------|------|
-| XL6009 boost | 5V → 30V regolabile | Regola il trimmer a vuoto a 30V |
-| L9110S | H-bridge, 800mA continui, 1.5A picco | Sufficiente per le bobine SIP |
-| Diodi flyback | 1N4007 o 1N5819 schottky | Opzionali, l'L9110S ha già protezione interna |
+| Boost 5V→~24V | modulo pronto (XL6009 col trimmer, o DC-DC fisso 24V) | Regola a ~24-30V; aggiungi ~47-100µF sull'uscita per bufferare i picchi |
+| **DRV8871** (breakout, es. Adafruit 3190) | H-bridge, **fino a 45V**, 3.6A picco, protezione interna | Morsetti a vite per bobina + VM (zero saldature); 2 ingressi logici IN1/IN2 |
+
+> ⚠️ **Non** usare L9110S/DRV8833: reggono solo ~11-12 V e si distruggerebbero a 24 V.
 
 ### Codice
 
-Vedi `firmware/src/bell_driver.py` — implementazione completa con pattern italiano (1s on, 4s off ciclico, fino a hook up o timeout).
+Vedi `firmware/src/bell_driver.py` — alterna IN1 (GPIO 22) / IN2 (GPIO 23) alla
+frequenza di squillo, col pattern italiano (1s on / 4s off, fino a hook up o
+timeout). Il toggle è software (a 22 Hz l'inerzia meccanica del campanello rende
+irrilevante il jitter).
 
 ### Pro e contro
 
-✅ Economico (~7€ totali)  
-✅ Componenti facilmente reperibili  
-✅ Zero rumore in idle (boost completamente spento)  
-✅ Frequenza e ampiezza regolabili da software  
+✅ Pochissime saldature (morsetti a vite per bobina e alimentazione)  
+✅ Nessun inverter/snubber/diodi esterni (protezione interna al DRV8871)  
+✅ Regge 24-30V senza problemi (margine fino a 45V)  
+✅ Frequenza regolabile da software, silenzio via coast  
 
-⚠️ Onda quadra invece di sinusoidale — il campanello suona leggermente più "secco" rispetto all'originale a 75V sinusoidale, ma rimane gradevolissimo  
-⚠️ Picchi induttivi sulle bobine — l'L9110S li gestisce ma per progetti seri meglio aggiungere snubber RC (100nF + 10Ω) in parallelo alle uscite  
+⚠️ Onda quadra invece di sinusoidale — il campanello suona leggermente più "secco" dell'originale a 75V sinusoidale, ma rimane gradevolissimo  
+⚠️ Il boost resta alimentato a riposo (pochi mA); per azzerare anche quelli servirebbe un GPIO+MOSFET sull'ingresso boost (più saldatura, non necessario)  
 
 ## Opzione B — Trasformatore + Oscillatore (più autentica)
 
@@ -141,6 +147,6 @@ Prima di pilotarlo elettronicamente, verifica meccanicamente:
 ## ⚠️ Sicurezza
 
 - **30V DC non sono pericolosi al tatto** in condizioni normali
-- Le bobine immagazzinano energia: spegni sempre BELL_EN prima di scollegare cavi
+- Le bobine immagazzinano energia: porta IN1=IN2=0 (coast) e togli alimentazione prima di scollegare i cavi
 - L'H-bridge può scaldare durante squilli prolungati — verifica che non superi 60°C
 - **Non far suonare il campanello vicino all'orecchio** — è MOLTO più forte di quanto sembri (~70-75 dB a 30cm)

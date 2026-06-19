@@ -41,9 +41,9 @@ separati, collegati **a jumper** (solo saldature through-hole degli header, nien
 
 | # | Componente | Quantità | Prezzo (€) | Note |
 |---|-----------|----------|-----------|------|
-| 13 | Boost converter regolabile XL6009 | 1 | 4 | 5V → ~30V DC |
-| 14 | H-bridge L9110S oppure DRV8833 | 1 | 3 | Genera AC per il campanello |
-| 15 | Trasformatore alternativo 5V → 24V AC (opzione B) | 1 | 8 | Soluzione più "pulita" |
+| 13 | Boost 5V→~24V (modulo XL6009 col trimmer, o DC-DC fisso 24V) | 1 | 4 | Alimenta solo l'H-bridge; +47-100µF sull'uscita |
+| 14 | **H-bridge DRV8871** (breakout, es. Adafruit 3190) | 1 | 8 | Regge fino a **45V** (24-30V OK), morsetti a vite, protezione interna. **NON** L9110S/DRV8833 (max ~12V) |
+| 15 | Trasformatore alternativo 5V → 24V AC (opzione B) | 1 | 8 | Soluzione più "pulita" (vedi bell_driver.md) |
 
 Vedi `hardware/bell_driver.md` per le due opzioni dettagliate.
 
@@ -98,6 +98,6 @@ Esclusi spese di spedizione e il telefono SIP stesso (sui mercatini italiani 20-
 - **PiMoroni / The Pi Hut** — Raspberry Pi e moduli HAT
 - **Mouser / RS Components** — componenti elettronici qualità
 - **DFRobot** — modulo alimentazione DFR0969 (anche via rivenditori/Mouser)
-- **AliExpress** — moduli generici (XL6009, L9110S, ecc.)
+- **AliExpress** — moduli generici (boost XL6009, ecc.)
 - **18650.it** — celle di qualità verificata
 - **Subito.it / eBay.it** — telefoni SIP vintage italiani
