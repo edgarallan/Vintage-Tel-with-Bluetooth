@@ -4,26 +4,24 @@
                                   VINTAGE TEL BL — Schema generale
                                   ═══════════════════════════════════
 
-  USB-C ──┐
-  (input) │
-          ▼
-    ┌──────────┐        ┌─────────────┐
-    │  TP4056  │ B+/B- ─┤ 2x 18650    │
-    │ + DW01   │        │ in parallelo│
-    │ + USB-C  │        │ 3.7V 7000mAh│
-    └────┬─────┘        └─────────────┘
-         │ OUT+ (4.0-4.2V)
-         │
-         ├────────────┬────────────────────┐
+  USB-C / micro-USB ──┐
+  (ricarica)          │
+                      ▼
+    ┌──────────────────────────────┐
+    │  DFRobot DFR0969             │  2×18650 + charger +
+    │  holder+charger+prot.+5V/2A  │  protezione + 5V regolato
+    └──────────────┬───────────────┘  (carica O scarica, no UPS)
+         5V        │
+         ├─────────┴──┬────────────────────┐
          │            │                    │
          ▼            ▼                    ▼
-    ┌─────────┐  ┌─────────┐          ┌──────────┐
-    │ MT3608  │  │ XL6009  │  (off    │  Switch  │
-    │ boost   │  │ boost   │   when   │   ON/OFF │
-    │ 5V/2A   │  │ 30V/1A  │   BELL_  │  vintage │
-    └────┬────┘  └────┬────┘   EN=0)  └──────────┘
-         │            │
-         │            ▼
+    (Raspberry   ┌─────────┐          ┌──────────┐
+     Pi + moduli │ XL6009  │  (off    │  Switch  │
+     a 5V)       │ boost   │   when   │   ON/OFF │
+                 │ 5→30V   │   BELL_  │  vintage │
+                 └────┬────┘   EN=0)  └──────────┘
+                      │
+                      ▼
          │       ┌──────────┐                ┌──────────────┐
          │       │  L9110S  │── OUT1 ────────┤ BOBINE       │
          │       │  H-bridge│                │ CAMPANELLO   │
@@ -67,7 +65,7 @@
     │                                    │
     └────────────────────────────────────┘
             ▲
-            │ Power 5V from MT3608
+            │ Power 5V dal DFR0969
             │
    ┌────────┴────────┐
    │  Disco SIP      │ ── 4 fili
@@ -118,10 +116,9 @@
 ### Alimentazione
 | Da | A | Tensione |
 |----|---|----------|
-| USB-C input | TP4056 IN+/IN- | 5V |
-| TP4056 B+/B- | 18650 cells | 3.0-4.2V |
-| TP4056 OUT | MT3608 IN | 3.7V nom |
-| TP4056 OUT | XL6009 IN | 3.7V nom |
-| MT3608 OUT | Pi 5V (pin 2) | 5V regolato |
-| MT3608 OUT | Tutti moduli VCC | 5V |
+| USB-C / micro-USB | DFR0969 (ricarica) | 5V |
+| DFR0969 (2×18650 interne) | — | 3.0-4.2V (gestite dal modulo) |
+| DFR0969 OUT 5V | Pi 5V (pin 2) | 5V regolato |
+| DFR0969 OUT 5V | Tutti moduli VCC | 5V |
+| DFR0969 OUT 5V | XL6009 IN | 5V |
 | XL6009 OUT | L9110S VCC | ~30V (solo quando BELL_EN=1) |

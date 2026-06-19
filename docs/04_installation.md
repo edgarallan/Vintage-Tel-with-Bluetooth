@@ -87,17 +87,17 @@ In questo modo puoi smontare facilmente.
 3. Fissa il Pi sulla base interna del telefono con distanziali M2.5 + biadesivo industriale
 4. Cabla con jumper female-female o piccola scheda di interconnessione
 
-## Step 6 — Montaggio alimentazione
+## Step 6 — Montaggio alimentazione (DFRobot DFR0969)
 
-1. Cablaggio TP4056:
-   ```
-   USB-C (input)  → IN+ / IN-
-   B+ / B-        → portacelle 18650
-   OUT+ / OUT-    → ingresso MT3608
-   ```
-2. Regola il MT3608 a 5.0V **PRIMA** di collegarlo al Pi (girare il trimmer con un mini cacciavite mentre misuri con multimetro)
-3. Fissa il portacelle 18650 sul fondo del telefono con biadesivo industriale
-4. Porta il connettore USB-C sul retro/sotto del telefono, in una posizione discreta
+Il **DFR0969** integra portacelle 2×18650 + caricabatterie + protezione + uscita
+**5 V regolata**: niente boost separato sul rail logico.
+
+1. Inserisci le due celle 18650 nel modulo (rispetta la polarità).
+2. L'uscita **5 V** alimenta il Pi (pin 2/5V) e tutti i moduli a 5 V; da quella stessa 5 V parte anche l'ingresso del boost campanello **XL6009**.
+3. Fissa il modulo sul fondo del telefono con biadesivo industriale.
+4. Porta il connettore **USB-C / micro-USB** di ricarica sul retro/sotto, in posizione discreta.
+
+> ⚠️ Il DFR0969 **carica oppure scarica**, non in contemporanea (no pass-through): non alimentare il telefono mentre è in carica. Verifica il budget 5V/2A coi picchi del campanello.
 
 ## Step 7 — Driver campanello
 
@@ -169,6 +169,6 @@ Solo se tutti i 6 test passano, procedi al rimontaggio finale.
 3. Verifica che il disco giri liberamente
 4. Chiudi il coperchio
 5. Avvita le viti del fondo
-6. Carica la batteria via USB-C fino a fine ciclo (LED TP4056 da rosso a verde)
+6. Carica la batteria via USB-C fino a fine ciclo (LED di carica del DFR0969)
 
 🎉 Sei pronto!

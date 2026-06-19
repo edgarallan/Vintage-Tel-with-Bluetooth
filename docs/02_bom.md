@@ -29,10 +29,13 @@ separati, collegati **a jumper** (solo saldature through-hole degli header, nien
 | # | Componente | Quantità | Prezzo (€) | Note |
 |---|-----------|----------|-----------|------|
 | 8 | Cella 18650 protetta 3500mAh (Samsung/LG) | 2 | 16 | In parallelo per autonomia |
-| 9 | Modulo TP4056 con protezione DW01 + USB-C | 1 | 3 | Charger + protezione scarica |
-| 10 | Boost converter MT3608 5V (o MP1584) | 1 | 3 | 3.7V → 5V per Pi |
-| 11 | Portacelle 2x18650 in parallelo | 1 | 3 | Stampabile in 3D in alternativa |
-| 12 | Interruttore on/off (vintage style) | 1 | 4 | Nascosto sul fondo |
+| 9 | **DFRobot DFR0969** — 2-Way 18650 Battery Holder | 1 | 11 | **All-in-one**: portacelle 2×18650 + caricabatterie (micro-USB/USB-C) + protezione + **uscita 5V/2A regolata** (e 3.3V). Sostituisce TP4056 + DW01 + MT3608 + portacelle |
+| 10 | Interruttore on/off (vintage style) | 1 | 4 | Nascosto sul fondo |
+
+> Il DFR0969 fornisce già i **5 V regolati** per Pi e moduli: **non serve un boost** sul rail logico.
+> **Limite**: carica *oppure* scarica (niente pass-through/UPS) → non alimenta mentre è in carica;
+> verifica sul tuo esemplare. Budget uscita **2 A** (max 3 A sconsigliato): attenzione ai picchi del campanello.
+> Il boost del **campanello** (5V→~30V) resta separato (vedi sotto, XL6009).
 
 ## Driver campanello
 
@@ -94,6 +97,7 @@ Esclusi spese di spedizione e il telefono SIP stesso (sui mercatini italiani 20-
 
 - **PiMoroni / The Pi Hut** — Raspberry Pi e moduli HAT
 - **Mouser / RS Components** — componenti elettronici qualità
-- **AliExpress** — moduli generici (TP4056, MT3608, ecc.)
+- **DFRobot** — modulo alimentazione DFR0969 (anche via rivenditori/Mouser)
+- **AliExpress** — moduli generici (XL6009, L9110S, ecc.)
 - **18650.it** — celle di qualità verificata
 - **Subito.it / eBay.it** — telefoni SIP vintage italiani

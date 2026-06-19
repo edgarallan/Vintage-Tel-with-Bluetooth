@@ -55,8 +55,9 @@ lì che va il Raspberry Pi.
 | 9 | **Boost (XL6009) + H-bridge (L9110S)** per il campanello | Vicino alla bobina del campanello (basso), cavi corti. |
 | 10 | **Mic MEMS I2S SPH0645** | **Nella cornetta**, al posto della capsula a carbone (rimossa); a jumper sull'I2S. |
 
-Alimentazione (vedi [`schematic.md`](schematic.md)): batteria 2×18650 → TP4056 →
-MT3608 (5V logica) e XL6009 (alta tensione campanello, attiva solo allo squillo).
+Alimentazione (vedi [`schematic.md`](schematic.md)): modulo **DFR0969** (2×18650 +
+charger + protezione + 5V regolato) → Pi e moduli a 5 V; da quella 5 V parte il
+boost XL6009 per il campanello (attivo solo allo squillo).
 
 ## Identificazione contatti col multimetro
 
