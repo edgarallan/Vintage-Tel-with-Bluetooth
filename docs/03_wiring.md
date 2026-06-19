@@ -14,7 +14,7 @@
               GND │ 9  ●  ● 10 │ RX (debug)
        DIAL_NSI   │ 11 ●  ● 12 │ I2S BCK
         HOOK_SW   │ 13 ●  ● 14 │ GND
-        BELL_EN   │ 15 ●  ● 16 │ BELL_PH
+       BELL_IN1   │ 15 ●  ● 16 │ BELL_IN2
               3V3 │ 17 ●  ● 18 │ BTN_PHONEBOOK
           (MOSI)  │ 19 ●  ● 20 │ GND
           (MISO)  │ 21 ●  ● 22 │ LED_R
@@ -37,8 +37,8 @@
 | DIAL_PULSE | GPIO 4 | 7 | IN (pull-up) | Impulsi del disco |
 | DIAL_NSI | GPIO 17 | 11 | IN (pull-up) | "Off-normal" — disco in movimento |
 | HOOK_SW | GPIO 27 | 13 | IN (pull-up) | LOW = cornetta sollevata |
-| BELL_EN | GPIO 22 | 15 | OUT | Abilita boost 24V |
-| BELL_PH | GPIO 23 | 16 | OUT | Fase H-bridge campanello (toggle 20Hz) |
+| BELL_IN1 | GPIO 22 | 15 | OUT | DRV8871 IN1 (campanello) |
+| BELL_IN2 | GPIO 23 | 16 | OUT | DRV8871 IN2 (campanello) |
 | BTN_PHONEBOOK | GPIO 24 | 18 | IN (pull-up) | Pulsante rubrica |
 | LED_R | GPIO 25 | 22 | OUT (PWM) | LED stato — rosso |
 | LED_G | GPIO 8 | 24 | OUT (PWM) | LED stato — verde |
@@ -171,9 +171,9 @@ Note:
 Vedi documento separato: [`hardware/bell_driver.md`](../hardware/bell_driver.md)
 
 Sintesi: il campanello richiede ~24V AC a 20-25Hz. Lo generiamo con:
-1. Boost DC-DC: 5V → ~30V DC
-2. H-bridge (L9110S) pilotato dal GPIO 23 alla frequenza di squillo
-3. GPIO 22 abilita/disabilita il boost (risparmio energia quando silente)
+1. Boost DC-DC: 5V → ~24V (modulo pronto)
+2. H-bridge **DRV8871** (regge fino a 45V) con bobina e alimentazione sui morsetti a vite
+3. GPIO 22/23 (IN1/IN2) alternati via software a ~22Hz; IN1=IN2=0 → silenzio (coast)
 
 ## Alimentazione
 

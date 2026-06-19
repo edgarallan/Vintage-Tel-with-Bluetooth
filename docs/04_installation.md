@@ -103,6 +103,10 @@ Il **DFR0969** integra portacelle 2×18650 + caricabatterie + protezione + uscit
 
 ![Schema driver campanello](../assets/diagrams/06_bell_driver_schematic.svg)
 
+> Nota: lo schema illustra il principio (boost + H-bridge). Il driver attuale è
+> **DRV8871** (regge 24-30V, morsetti a vite), pilotato da GPIO 22/23 — vedi
+> [`hardware/bell_driver.md`](../hardware/bell_driver.md).
+
 Segui [`hardware/bell_driver.md`](../hardware/bell_driver.md).
 
 Test funzionamento PRIMA di rimontare tutto:

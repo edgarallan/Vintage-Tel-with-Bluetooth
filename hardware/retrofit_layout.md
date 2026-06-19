@@ -52,7 +52,7 @@ lì che va il Raspberry Pi.
 |---|-----------|-----------------------|
 | 7 | **Raspberry Pi Zero 2 W** | Spazio centrale liberato da 2+3 (zona più piatta e ampia). |
 | 8 | **Ampli I2S MAX98357A** | Vicino ai morsetti dell'auricolare; speaker su morsetto a vite, I2S a jumper. |
-| 9 | **Boost (XL6009) + H-bridge (L9110S)** per il campanello | Vicino alla bobina del campanello (basso), cavi corti. |
+| 9 | **Boost 5V→24V + H-bridge DRV8871** per il campanello | Vicino alla bobina del campanello (basso), cavi corti. |
 | 10 | **Mic MEMS I2S SPH0645** | **Nella cornetta**, al posto della capsula a carbone (rimossa); a jumper sull'I2S. |
 
 Alimentazione (vedi [`schematic.md`](schematic.md)): modulo **DFR0969** (2×18650 +

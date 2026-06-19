@@ -86,19 +86,18 @@
 ## Campanello
 
 ### Sintomo: il campanello non suona
-1. Verifica che il boost XL6009 generi davvero ~30V (multimetro)
-2. Verifica i contatti dell'H-bridge (L9110S): IN1 e IN2 devono alternare
-3. Test manuale GPIO:
+1. Verifica che il boost generi davvero ~24V sulla VM del DRV8871 (multimetro)
+2. Verifica che il DRV8871 alterni: IN1 e IN2 devono andare in opposizione (mai entrambi alti)
+3. Test manuale GPIO (alterna IN1/IN2 = onda quadra AC):
    ```bash
    python3 -c "
    import RPi.GPIO as GPIO, time
    GPIO.setmode(GPIO.BCM)
    GPIO.setup(22, GPIO.OUT); GPIO.setup(23, GPIO.OUT)
-   GPIO.output(22, 1)  # enable boost
    for _ in range(100):
-       GPIO.output(23, 1); time.sleep(0.022)
-       GPIO.output(23, 0); time.sleep(0.022)
-   GPIO.output(22, 0)
+       GPIO.output(22, 1); GPIO.output(23, 0); time.sleep(0.0227)
+       GPIO.output(22, 0); GPIO.output(23, 1); time.sleep(0.0227)
+   GPIO.output(22, 0); GPIO.output(23, 0)  # coast = silenzio
    GPIO.cleanup()
    "
    ```

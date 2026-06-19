@@ -1,8 +1,14 @@
 """
 bell_driver.py — Driver del campanello elettromeccanico originale
 
-Genera un'onda quadra a 20-25Hz applicata tramite H-bridge L9110S
-alle bobine del campanello, alimentate da boost converter XL6009.
+Genera un'onda quadra a 20-25 Hz applicata alle bobine del campanello tramite un
+H-bridge **DRV8871** (breakout Adafruit, regge fino a 45 V), alimentato da un
+boost 5V→~24V. Due GPIO pilotano gli ingressi IN1/IN2 del DRV8871:
+  - IN1=1, IN2=0 → corrente in un senso
+  - IN1=0, IN2=1 → corrente nel senso opposto
+  - IN1=IN2=0   → uscite in coast (silenzio, nessuna corrente nella bobina)
+Alternando IN1/IN2 alla frequenza di squillo si ottiene l'AC che fa oscillare
+il martelletto. Nessun inverter/snubber esterni (il DRV8871 ha protezione interna).
 
 Pattern italiano standard: 1s squillo, 4s pausa.
 """
@@ -11,26 +17,28 @@ import asyncio
 import logging
 
 try:
-    from gpiozero import OutputDevice, PWMOutputDevice
+    from gpiozero import OutputDevice
 except ImportError:
     OutputDevice = None
-    PWMOutputDevice = None
 
 
 log = logging.getLogger("bell_driver")
 
 
 class BellDriver:
-    """Pilota il campanello tramite GPIO."""
+    """Pilota il campanello tramite H-bridge DRV8871 (IN1/IN2)."""
 
     def __init__(self, config: dict):
         self.config = config
-        self._en_gpio = 22       # BCM, abilita boost converter
-        self._ph_gpio = 23       # BCM, fase H-bridge
+        self._in1_gpio = 22      # BCM, DRV8871 IN1
+        self._in2_gpio = 23      # BCM, DRV8871 IN2
 
-        self._enable = None
-        self._phase = None
+        freq = max(1, int(config["frequency_hz"]))
+        self._half_period = 1.0 / (2 * freq)   # mezzo ciclo dell'onda quadra
+        self._freq = freq
 
+        self._in1 = None
+        self._in2 = None
         self._ringing = False
         self._ring_task: asyncio.Task | None = None
 
@@ -39,20 +47,17 @@ class BellDriver:
             log.warning("gpiozero non disponibile — modalità simulazione")
             return
 
-        self._enable = OutputDevice(self._en_gpio, initial_value=False)
-        # PWM 50% duty per pilotare l'H-bridge (onda quadra)
-        self._phase = PWMOutputDevice(self._ph_gpio, frequency=self.config["frequency_hz"])
-        self._phase.value = 0
-
-        log.info("BellDriver pronto (EN=GPIO%d, PH=GPIO%d, freq=%dHz)",
-                 self._en_gpio, self._ph_gpio, self.config["frequency_hz"])
+        self._in1 = OutputDevice(self._in1_gpio, initial_value=False)
+        self._in2 = OutputDevice(self._in2_gpio, initial_value=False)
+        log.info("BellDriver pronto (DRV8871 IN1=GPIO%d, IN2=GPIO%d, freq=%dHz)",
+                 self._in1_gpio, self._in2_gpio, self._freq)
 
     async def stop(self):
         await self.stop_ringing()
-        if self._enable:
-            self._enable.close()
-        if self._phase:
-            self._phase.close()
+        if self._in1:
+            self._in1.close()
+        if self._in2:
+            self._in2.close()
 
     async def start_ringing(self):
         """Avvia pattern di squillo (loop fino a stop_ringing)."""
@@ -72,7 +77,7 @@ class BellDriver:
             except asyncio.CancelledError:
                 pass
             self._ring_task = None
-        self._bell_off()
+        self._coast()
         log.info("🔕 Stop squillo")
 
     async def _ring_loop(self):
@@ -84,29 +89,40 @@ class BellDriver:
 
         try:
             while self._ringing and count < max_rings:
-                self._bell_on()
-                await asyncio.sleep(on_s)
-                self._bell_off()
+                await self._ac_burst(on_s)
+                self._coast()
                 if not self._ringing:
                     break
                 await asyncio.sleep(off_s)
                 count += 1
         finally:
-            self._bell_off()
+            self._coast()
 
-    def _bell_on(self):
-        """Abilita boost + avvia onda quadra."""
-        if self._enable:
-            self._enable.on()
-        if self._phase:
-            self._phase.value = 0.5  # 50% duty = onda quadra simmetrica
+    async def _ac_burst(self, duration_s: float):
+        """Genera onda quadra AC sulle bobine per ~duration_s alternando IN1/IN2."""
+        if not self._in1 or not self._in2:
+            # Off-Pi: simula soltanto la durata
+            await asyncio.sleep(duration_s)
+            return
 
-    def _bell_off(self):
-        """Spegne tutto."""
-        if self._phase:
-            self._phase.value = 0
-        if self._enable:
-            self._enable.off()
+        cycles = max(1, int(duration_s * self._freq))
+        for _ in range(cycles):
+            if not self._ringing:
+                break
+            self._in1.on()
+            self._in2.off()
+            await asyncio.sleep(self._half_period)
+            self._in1.off()
+            self._in2.on()
+            await asyncio.sleep(self._half_period)
+        self._coast()
+
+    def _coast(self):
+        """Mette le uscite in coast (silenzio): nessuna corrente nella bobina."""
+        if self._in1:
+            self._in1.off()
+        if self._in2:
+            self._in2.off()
 
 
 async def _test():
