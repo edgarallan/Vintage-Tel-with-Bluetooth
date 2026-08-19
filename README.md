@@ -1,5 +1,19 @@
 # 📞 Vintage Tel BL
 
+> ### 📦 Questo progetto è la versione 1 ed è archiviato
+>
+> Lo sviluppo continua su **[Vintage-Tel-ESP32](https://github.com/edgarallan/Vintage-Tel-ESP32)**,
+> che rifà lo stesso telefono su **ESP32** con firmware in C/ESP-IDF.
+>
+> **Perché:** il Raspberry Pi Zero 2 W è diventato costoso e difficile da reperire. Ma il
+> microcontrollore si è rivelato anche tecnicamente più adatto a un telefono: si accende in
+> un secondo, non ha una scheda SD da corrompere quando stacchi la corrente e non richiede
+> uno spegnimento ordinato.
+>
+> Quello che leggi qui **resta valido e funzionante** come progetto Raspberry Pi, e buona
+> parte della documentazione hardware — fisica del campanello, smontaggio dell'S62, mappa di
+> conversione della cassetta — vale per entrambe le versioni.
+
 > Trasforma un telefono SIP Siemens grigio anni '70 in un **vivavoce Bluetooth (HFP)** per il cellulare, mantenendo cornetta, disco combinatore e campanello elettromeccanico originali.
 
 ![status](https://img.shields.io/badge/status-WIP-orange)
